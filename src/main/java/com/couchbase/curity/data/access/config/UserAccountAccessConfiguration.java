@@ -16,25 +16,12 @@
 
 package com.couchbase.curity.data.access.config;
 
-import se.curity.identityserver.sdk.config.Configuration;
-import se.curity.identityserver.sdk.config.annotation.Name;
-import se.curity.identityserver.sdk.service.Json;
-import se.curity.identityserver.sdk.service.WebServiceClient;
+import se.curity.identityserver.sdk.config.annotation.DefaultBoolean;
 
-public interface CouchbaseDataAccessProviderConfiguration extends Configuration
+public interface UserAccountAccessConfiguration
 {
 
-    WebServiceClient webServiceClient();
-
-    Json json();
-
-    @Name("credential-access")
-    CredentialAccessConfiguration getCredentialAccessConfiguration();
-
-    @Name("user-account-access")
-    UserAccountAccessConfiguration getUserAccountAccessConfiguration();
-
-    @Name("attributes")
-    AttributesConfiguration getAttributesConfiguration();
+    @DefaultBoolean(true)
+    boolean isUserAccount();
 
 }

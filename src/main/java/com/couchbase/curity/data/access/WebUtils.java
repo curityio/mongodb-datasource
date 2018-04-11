@@ -22,11 +22,7 @@ import se.curity.identityserver.sdk.http.HttpResponse;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 final class WebUtils
 {

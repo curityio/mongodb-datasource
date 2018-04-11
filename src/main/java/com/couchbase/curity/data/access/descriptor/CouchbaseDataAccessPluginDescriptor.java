@@ -1,11 +1,13 @@
 package com.couchbase.curity.data.access.descriptor;
 
 import com.couchbase.curity.data.access.CouchbaseCredentialDataAccessProvider;
+import com.couchbase.curity.data.access.CouchbaseUserAccountDataAccessProvider;
 import com.couchbase.curity.data.access.config.CouchbaseDataAccessProviderConfiguration;
 import se.curity.identityserver.sdk.Nullable;
 import se.curity.identityserver.sdk.config.Configuration;
 import se.curity.identityserver.sdk.datasource.AttributeDataAccessProvider;
 import se.curity.identityserver.sdk.datasource.CredentialDataAccessProvider;
+import se.curity.identityserver.sdk.datasource.UserAccountDataAccessProvider;
 import se.curity.identityserver.sdk.plugin.descriptor.DataAccessProviderPluginDescriptor;
 
 public final class CouchbaseDataAccessPluginDescriptor implements DataAccessProviderPluginDescriptor
@@ -28,6 +30,15 @@ public final class CouchbaseDataAccessPluginDescriptor implements DataAccessProv
     {
         return CouchbaseCredentialDataAccessProvider.class;
     }
+
+
+    @Nullable
+    @Override
+    public Class<? extends UserAccountDataAccessProvider> getUserAccountDataAccessProvider()
+    {
+        return CouchbaseUserAccountDataAccessProvider.class;
+    }
+
 
     @Nullable
     @Override
