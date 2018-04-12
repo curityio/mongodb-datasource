@@ -18,13 +18,10 @@ package com.couchbase.curity.data.access;
 
 
 import com.couchbase.curity.data.access.config.CouchbaseDataAccessProviderConfiguration;
-import com.couchbase.curity.data.access.config.CredentialAccessConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.curity.identityserver.sdk.Nullable;
 import se.curity.identityserver.sdk.attribute.AccountAttributes;
-import se.curity.identityserver.sdk.attribute.AttributeName;
-import se.curity.identityserver.sdk.attribute.Attributes;
 import se.curity.identityserver.sdk.attribute.AuthenticationAttributes;
 import se.curity.identityserver.sdk.attribute.ContextAttributes;
 import se.curity.identityserver.sdk.datasource.CredentialDataAccessProvider;
@@ -35,29 +32,22 @@ import se.curity.identityserver.sdk.http.HttpStatus;
 import se.curity.identityserver.sdk.service.Json;
 import se.curity.identityserver.sdk.service.WebServiceClient;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import static com.couchbase.curity.data.access.Constants.USER_BUCKET_PATH;
-import static com.couchbase.curity.data.access.WebUtils.urlEncode;
 import static java.util.Collections.singletonMap;
 
 public class CouchbaseCredentialDataAccessProvider implements CredentialDataAccessProvider
 {
-    private static final String SUBJECT_PLACEHOLDER = ":subject";
-    private static final String PASSWORD_PLACEHOLDER = ":password";
     private static final Logger _logger = LoggerFactory.getLogger(CouchbaseCredentialDataAccessProvider.class);
 
-    private final CredentialAccessConfiguration _configuration;
     private final Json _json;
     private final WebServiceClient _webServiceClient;
 
     @SuppressWarnings("unused") // used through DI
     public CouchbaseCredentialDataAccessProvider(CouchbaseDataAccessProviderConfiguration configuration)
     {
-        _configuration = configuration.getCredentialAccessConfiguration();
         _json = configuration.json();
         _webServiceClient = configuration.webServiceClient();
     }
@@ -73,10 +63,6 @@ public class CouchbaseCredentialDataAccessProvider implements CredentialDataAcce
             _logger.warn("Cannot update account password, missing password value");
             return;
         }
-
-        String requestPath = createRequestPath(subjectId, newPassword.get());
-        Map<String, String> requestParameterMap = createRequestParameterMap(subjectId, newPassword.get());
-
     }
 
     @Override
@@ -104,48 +90,10 @@ public class CouchbaseCredentialDataAccessProvider implements CredentialDataAcce
         return AuthenticationAttributes.of(userName, ContextAttributes.empty());
     }
 
-    @Nullable
-    AuthenticationAttributes getAuthenticationAttributesFrom(HttpResponse CouchbaseResponse, String userName)
-    {
-        @Nullable AuthenticationAttributes attributes = null;
-
-        return attributes;
-    }
-
-    private Attributes readFromCouchbaseResponse(String responseBody)
-    {
-        return Attributes.fromMap(_json.fromJson(responseBody), AttributeName.Format.JSON);
-    }
-
     @Override
     public boolean customQueryVerifiesPassword()
     {
-        return _configuration.backendVerifiesPassword();
-    }
-
-    /**
-     * Helper method that crafts the request path that the call is made to. Can consider
-     * the username and password to substitute pars of the path if needed.
-     */
-
-    String createRequestPath(String subject, String password)
-    {
-        return _configuration.urlPath()
-                .replaceAll(SUBJECT_PLACEHOLDER, urlEncode(subject))
-                .replaceAll(PASSWORD_PLACEHOLDER, urlEncode(password));
-    }
-
-    private Map<String, String> createRequestParameterMap(String subjectId, @Nullable String password)
-    {
-        Map dataMap = new HashMap(2);
-        dataMap.put(_configuration.usernameParameter(), subjectId);
-
-        if (password != null)
-        {
-            dataMap.put(_configuration.passwordParameter(), password);
-        }
-
-        return Collections.unmodifiableMap(dataMap);
+        return false;
     }
 
 }
