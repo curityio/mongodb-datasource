@@ -26,20 +26,23 @@ import se.curity.identityserver.sdk.attribute.AccountAttributes;
 import se.curity.identityserver.sdk.attribute.AttributeName;
 import se.curity.identityserver.sdk.attribute.Attributes;
 import se.curity.identityserver.sdk.attribute.AuthenticationAttributes;
+import se.curity.identityserver.sdk.attribute.ContextAttributes;
 import se.curity.identityserver.sdk.datasource.CredentialDataAccessProvider;
-import se.curity.identityserver.sdk.http.ContentType;
+import se.curity.identityserver.sdk.errors.ExternalServiceException;
 import se.curity.identityserver.sdk.http.HttpRequest;
 import se.curity.identityserver.sdk.http.HttpResponse;
+import se.curity.identityserver.sdk.http.HttpStatus;
 import se.curity.identityserver.sdk.service.Json;
 import se.curity.identityserver.sdk.service.WebServiceClient;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.couchbase.curity.data.access.Constants.USER_BUCKET_PATH;
 import static com.couchbase.curity.data.access.WebUtils.urlEncode;
+import static java.util.Collections.singletonMap;
 
 public class CouchbaseCredentialDataAccessProvider implements CredentialDataAccessProvider
 {
@@ -80,33 +83,25 @@ public class CouchbaseCredentialDataAccessProvider implements CredentialDataAcce
     @Nullable
     public AuthenticationAttributes verifyPassword(String userName, String password)
     {
-        String requestPath = createRequestPath(userName, password);
-        Map<String, String> requestParameterMap;
-
-        if (_configuration.backendVerifiesPassword())
+        HttpRequest request = _webServiceClient
+                .withPath(USER_BUCKET_PATH + "/docs/" + userName)
+                .request()
+                .method("GET");
+        HttpResponse couchbaseResponse = request.response();
+        if (couchbaseResponse.statusCode() != HttpStatus.OK.getCode())
         {
-            requestParameterMap = createRequestParameterMap(userName, password);
-        }
-        else
-        {
-            // Don't send the password when the backend is not doing anything with it
-            requestParameterMap = createRequestParameterMap(userName, null);
+            throw new ExternalServiceException(couchbaseResponse.body(HttpResponse.asString()));
         }
 
-        HttpRequest request =
-                _webServiceClient
-                        .withPath(requestPath)
-                        .request()
-                        .contentType(ContentType.JSON.toString())
-                        .accept(ContentType.JSON.toString())
-                        .body(HttpRequest.fromString(_json.toJson(requestParameterMap), StandardCharsets.UTF_8))
-                        .method("POST");
+        Map<String, Object> dataMap = _json.fromJson(couchbaseResponse.body(HttpResponse.asString()));
+        AccountAttributes accountAttributes = AccountAttributes.fromMap((Map) dataMap.get("json"));
+        AccountAttributes currentAccountAttributes = AccountAttributes.fromMap(singletonMap("password", password));
+        if (accountAttributes.getPassword() != currentAccountAttributes.getPassword())
+        {
+            throw new ExternalServiceException("Bad credentials");
+        }
 
-        HttpResponse CouchbaseResponse = request.response();
-
-        _logger.debug("Couchbase data-source responds with status: {}", CouchbaseResponse.statusCode());
-
-        return getAuthenticationAttributesFrom(CouchbaseResponse, userName);
+        return AuthenticationAttributes.of(userName, ContextAttributes.empty());
     }
 
     @Nullable
