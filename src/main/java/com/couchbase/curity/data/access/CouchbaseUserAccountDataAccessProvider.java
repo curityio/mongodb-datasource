@@ -24,6 +24,7 @@ import se.curity.identityserver.sdk.data.query.ResourceQuery;
 import se.curity.identityserver.sdk.data.query.ResourceQueryResult;
 import se.curity.identityserver.sdk.data.update.AttributeUpdate;
 import se.curity.identityserver.sdk.datasource.UserAccountDataAccessProvider;
+import se.curity.identityserver.sdk.errors.ExternalServiceException;
 import se.curity.identityserver.sdk.http.HttpRequest;
 import se.curity.identityserver.sdk.http.HttpResponse;
 import se.curity.identityserver.sdk.http.HttpStatus;
@@ -33,6 +34,7 @@ import se.curity.identityserver.sdk.service.WebServiceClient;
 import java.util.Collections;
 import java.util.Map;
 
+import static com.couchbase.curity.data.access.Constants.USER_BUCKET_PATH;
 import static se.curity.identityserver.sdk.http.HttpRequest.createFormUrlEncodedBodyProcessor;
 
 public class CouchbaseUserAccountDataAccessProvider implements UserAccountDataAccessProvider
@@ -69,21 +71,35 @@ public class CouchbaseUserAccountDataAccessProvider implements UserAccountDataAc
     @Override
     public AccountAttributes create(AccountAttributes accountAttributes)
     {
-        HttpRequest request =
-                _webServiceClient
-                        .withPath("/pools/default/buckets/users/docs/" + accountAttributes.getUserName())
-                        .request()
-                        .contentType("application/x-www-form-urlencoded")
-                        .body(createFormUrlEncodedBodyProcessor(
-                                Collections.singletonMap("value", _json.toJson(accountAttributes))))
-                        .method("POST");
+        HttpRequest request = _webServiceClient
+                .withPath(USER_BUCKET_PATH + "/docs/" + accountAttributes.getUserName())
+                .request()
+                .contentType("application/x-www-form-urlencoded")
+                .body(createFormUrlEncodedBodyProcessor(
+                        Collections.singletonMap("value", _json.toJson(accountAttributes))))
+                .method("POST");
 
         HttpResponse couchbaseResponse = request.response();
-        if (couchbaseResponse.statusCode() == HttpStatus.OK.getCode())
+        if (couchbaseResponse.statusCode() != HttpStatus.OK.getCode())
         {
-            return accountAttributes;
+            throw new ExternalServiceException(couchbaseResponse.body(HttpResponse.asString()));
         }
-        return null;
+
+        request = _webServiceClient
+                .withPath(USER_BUCKET_PATH + "/docs/" + accountAttributes.getUserName())
+                .request()
+                .method("GET");
+        couchbaseResponse = request.response();
+        if (couchbaseResponse.statusCode() != HttpStatus.OK.getCode())
+        {
+            throw new ExternalServiceException(couchbaseResponse.body(HttpResponse.asString()));
+        }
+
+        Map<String, Object> dataMap = _json.fromJson(couchbaseResponse.body(HttpResponse.asString()));
+        AccountAttributes newAccountAttributes = AccountAttributes.fromMap((Map) dataMap.get("json"));
+
+        newAccountAttributes = newAccountAttributes.removeAttribute("password");
+        return newAccountAttributes;
     }
 
     @Override
