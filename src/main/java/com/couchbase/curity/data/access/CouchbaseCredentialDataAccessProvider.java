@@ -32,11 +32,11 @@ import se.curity.identityserver.sdk.http.HttpStatus;
 import se.curity.identityserver.sdk.service.Json;
 import se.curity.identityserver.sdk.service.WebServiceClient;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
 import static com.couchbase.curity.data.access.Constants.USER_BUCKET_PATH;
-import static java.util.Collections.singletonMap;
 
 public class CouchbaseCredentialDataAccessProvider implements CredentialDataAccessProvider
 {
@@ -81,13 +81,14 @@ public class CouchbaseCredentialDataAccessProvider implements CredentialDataAcce
 
         Map<String, Object> dataMap = _json.fromJson(couchbaseResponse.body(HttpResponse.asString()));
         AccountAttributes accountAttributes = AccountAttributes.fromMap((Map) dataMap.get("json"));
-        AccountAttributes currentAccountAttributes = AccountAttributes.fromMap(singletonMap("password", password));
-        if (accountAttributes.getPassword() != currentAccountAttributes.getPassword())
+
+        if (!password.equals(accountAttributes.getPassword()))
         {
             throw new ExternalServiceException("Bad credentials");
         }
 
-        return AuthenticationAttributes.of(userName, ContextAttributes.empty());
+        return AuthenticationAttributes.of(userName,
+                ContextAttributes.of(Collections.singletonMap("userName", userName)));
     }
 
     @Override
