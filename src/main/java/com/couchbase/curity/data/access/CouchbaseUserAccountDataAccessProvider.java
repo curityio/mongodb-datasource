@@ -18,23 +18,34 @@ package com.couchbase.curity.data.access;
 
 
 import com.couchbase.curity.data.access.config.CouchbaseDataAccessProviderConfiguration;
-import com.couchbase.curity.data.access.config.UserAccountAccessConfiguration;
 import se.curity.identityserver.sdk.attribute.AccountAttributes;
 import se.curity.identityserver.sdk.attribute.scim.v2.ResourceAttributes;
 import se.curity.identityserver.sdk.data.query.ResourceQuery;
 import se.curity.identityserver.sdk.data.query.ResourceQueryResult;
 import se.curity.identityserver.sdk.data.update.AttributeUpdate;
 import se.curity.identityserver.sdk.datasource.UserAccountDataAccessProvider;
+import se.curity.identityserver.sdk.http.HttpRequest;
+import se.curity.identityserver.sdk.http.HttpResponse;
+import se.curity.identityserver.sdk.http.HttpStatus;
+import se.curity.identityserver.sdk.service.Json;
+import se.curity.identityserver.sdk.service.WebServiceClient;
 
+import java.util.Collections;
 import java.util.Map;
+
+import static se.curity.identityserver.sdk.http.HttpRequest.createFormUrlEncodedBodyProcessor;
 
 public class CouchbaseUserAccountDataAccessProvider implements UserAccountDataAccessProvider
 {
-    private final UserAccountAccessConfiguration _configuration;
+    private final CouchbaseDataAccessProviderConfiguration _configuration;
+    private final Json _json;
+    private final WebServiceClient _webServiceClient;
 
     public CouchbaseUserAccountDataAccessProvider(CouchbaseDataAccessProviderConfiguration configuration)
     {
-        this._configuration = configuration.getUserAccountAccessConfiguration();
+        this._configuration = configuration;
+        _json = configuration.json();
+        _webServiceClient = configuration.webServiceClient();
     }
 
     @Override
@@ -58,6 +69,20 @@ public class CouchbaseUserAccountDataAccessProvider implements UserAccountDataAc
     @Override
     public AccountAttributes create(AccountAttributes accountAttributes)
     {
+        HttpRequest request =
+                _webServiceClient
+                        .withPath("/pools/default/buckets/users/docs/" + accountAttributes.getUserName())
+                        .request()
+                        .contentType("application/x-www-form-urlencoded")
+                        .body(createFormUrlEncodedBodyProcessor(
+                                Collections.singletonMap("value", _json.toJson(accountAttributes))))
+                        .method("POST");
+
+        HttpResponse couchbaseResponse = request.response();
+        if (couchbaseResponse.statusCode() == HttpStatus.OK.getCode())
+        {
+            return accountAttributes;
+        }
         return null;
     }
 

@@ -27,11 +27,15 @@ import se.curity.identityserver.sdk.attribute.AttributeName;
 import se.curity.identityserver.sdk.attribute.Attributes;
 import se.curity.identityserver.sdk.attribute.AuthenticationAttributes;
 import se.curity.identityserver.sdk.datasource.CredentialDataAccessProvider;
+import se.curity.identityserver.sdk.http.ContentType;
 import se.curity.identityserver.sdk.http.HttpRequest;
 import se.curity.identityserver.sdk.http.HttpResponse;
 import se.curity.identityserver.sdk.service.Json;
 import se.curity.identityserver.sdk.service.WebServiceClient;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -89,9 +93,14 @@ public class CouchbaseCredentialDataAccessProvider implements CredentialDataAcce
             requestParameterMap = createRequestParameterMap(userName, null);
         }
 
-        WebServiceClient webServiceClient = _webServiceClient.withPath(requestPath);
-
-        HttpRequest request = getHttpRequestToVerifyPassword(requestParameterMap, webServiceClient);
+        HttpRequest request =
+                _webServiceClient
+                        .withPath(requestPath)
+                        .request()
+                        .contentType(ContentType.JSON.toString())
+                        .accept(ContentType.JSON.toString())
+                        .body(HttpRequest.fromString(_json.toJson(requestParameterMap), StandardCharsets.UTF_8))
+                        .method("POST");
 
         HttpResponse CouchbaseResponse = request.response();
 
@@ -106,12 +115,6 @@ public class CouchbaseCredentialDataAccessProvider implements CredentialDataAcce
         @Nullable AuthenticationAttributes attributes = null;
 
         return attributes;
-    }
-
-    private HttpRequest getHttpRequestToVerifyPassword(Map<String, String> requestParameterMap,
-                                                       WebServiceClient webServiceClient)
-    {
-        return null;
     }
 
     private Attributes readFromCouchbaseResponse(String responseBody)
@@ -139,7 +142,15 @@ public class CouchbaseCredentialDataAccessProvider implements CredentialDataAcce
 
     private Map<String, String> createRequestParameterMap(String subjectId, @Nullable String password)
     {
-        return null;
+        Map dataMap = new HashMap(2);
+        dataMap.put(_configuration.usernameParameter(), subjectId);
+
+        if (password != null)
+        {
+            dataMap.put(_configuration.passwordParameter(), password);
+        }
+
+        return Collections.unmodifiableMap(dataMap);
     }
 
 }
