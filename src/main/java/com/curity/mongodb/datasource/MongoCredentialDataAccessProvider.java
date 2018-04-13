@@ -17,32 +17,33 @@
 package com.curity.mongodb.datasource;
 
 
-import com.curity.mongodb.datasource.config.MongoDataAccessProviderConfiguration;
+import com.mongodb.client.MongoDatabase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.curity.identityserver.sdk.Nullable;
 import se.curity.identityserver.sdk.attribute.AccountAttributes;
+import se.curity.identityserver.sdk.attribute.Attribute;
 import se.curity.identityserver.sdk.attribute.Attributes;
 import se.curity.identityserver.sdk.attribute.AuthenticationAttributes;
 import se.curity.identityserver.sdk.attribute.ContextAttributes;
 import se.curity.identityserver.sdk.attribute.SubjectAttributes;
 import se.curity.identityserver.sdk.datasource.CredentialDataAccessProvider;
-import se.curity.identityserver.sdk.service.Json;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 public class MongoCredentialDataAccessProvider implements CredentialDataAccessProvider
 {
     private static final Logger _logger = LoggerFactory.getLogger(MongoCredentialDataAccessProvider.class);
 
-    private final Json _json;
+    private final MongoDatabase _database;
+
+    private final MongoUtils _mongoUtils;
 
     @SuppressWarnings("unused") // used through DI
-    public MongoCredentialDataAccessProvider(MongoDataAccessProviderConfiguration configuration)
+    public MongoCredentialDataAccessProvider(ConnectionPool connectionPool)
     {
-        _json = configuration.json();
+        _database = connectionPool.getDatabase();
+        _mongoUtils = new MongoUtils(_database);
     }
 
     @Override
@@ -62,9 +63,12 @@ public class MongoCredentialDataAccessProvider implements CredentialDataAccessPr
     @Nullable
     public AuthenticationAttributes verifyPassword(String userName, String password)
     {
-        Map<String, Object> dataMap = new HashMap<>();
-
-        return AuthenticationAttributes.of(SubjectAttributes.of(userName, Attributes.fromMap(dataMap)),
+        Attributes accountAttributes = _mongoUtils.getAccountAttributes("userName", userName, false);
+        if (accountAttributes == null)
+        {
+            accountAttributes = Attributes.of(Attribute.of("password", ""));
+        }
+        return AuthenticationAttributes.of(SubjectAttributes.of(userName, accountAttributes),
                 ContextAttributes.empty());
     }
 
