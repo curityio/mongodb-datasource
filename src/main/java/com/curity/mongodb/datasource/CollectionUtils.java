@@ -9,7 +9,7 @@
  * For further information, please contact Curity AB.
  */
 
-package com.couchbase.curity.data.access;
+package com.curity.mongodb.datasource;
 
 import java.util.Collection;
 import java.util.Map;

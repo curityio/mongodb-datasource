@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.couchbase.curity.data.access;
+package com.curity.mongodb.datasource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,1 +1,1 @@
-com.couchbase.curity.data.access.descriptor.CouchbaseDataAccessPluginDescriptor
+com.curity.mongodb.datasource.descriptor.MongoDataAccessPluginDescriptor

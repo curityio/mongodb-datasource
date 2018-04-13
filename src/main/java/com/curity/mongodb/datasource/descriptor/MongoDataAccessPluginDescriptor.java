@@ -1,8 +1,8 @@
-package com.couchbase.curity.data.access.descriptor;
+package com.curity.mongodb.datasource.descriptor;
 
-import com.couchbase.curity.data.access.CouchbaseCredentialDataAccessProvider;
-import com.couchbase.curity.data.access.CouchbaseUserAccountDataAccessProvider;
-import com.couchbase.curity.data.access.config.CouchbaseDataAccessProviderConfiguration;
+import com.curity.mongodb.datasource.MongoCredentialDataAccessProvider;
+import com.curity.mongodb.datasource.MongoUserAccountDataAccessProvider;
+import com.curity.mongodb.datasource.config.MongoDataAccessProviderConfiguration;
 import se.curity.identityserver.sdk.Nullable;
 import se.curity.identityserver.sdk.config.Configuration;
 import se.curity.identityserver.sdk.datasource.AttributeDataAccessProvider;
@@ -10,25 +10,25 @@ import se.curity.identityserver.sdk.datasource.CredentialDataAccessProvider;
 import se.curity.identityserver.sdk.datasource.UserAccountDataAccessProvider;
 import se.curity.identityserver.sdk.plugin.descriptor.DataAccessProviderPluginDescriptor;
 
-public final class CouchbaseDataAccessPluginDescriptor implements DataAccessProviderPluginDescriptor
+public final class MongoDataAccessPluginDescriptor implements DataAccessProviderPluginDescriptor
 {
     @Override
     public String getPluginImplementationType()
     {
-        return "couchbase";
+        return "mongodb";
     }
 
     @Override
     public Class<? extends Configuration> getConfigurationType()
     {
-        return CouchbaseDataAccessProviderConfiguration.class;
+        return MongoDataAccessProviderConfiguration.class;
     }
 
     @Nullable
     @Override
     public Class<? extends CredentialDataAccessProvider> getCredentialDataAccessProvider()
     {
-        return CouchbaseCredentialDataAccessProvider.class;
+        return MongoCredentialDataAccessProvider.class;
     }
 
 
@@ -36,7 +36,7 @@ public final class CouchbaseDataAccessPluginDescriptor implements DataAccessProv
     @Override
     public Class<? extends UserAccountDataAccessProvider> getUserAccountDataAccessProvider()
     {
-        return CouchbaseUserAccountDataAccessProvider.class;
+        return MongoUserAccountDataAccessProvider.class;
     }
 
 

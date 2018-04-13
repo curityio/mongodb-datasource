@@ -14,17 +14,32 @@
  *  limitations under the License.
  */
 
-package com.couchbase.curity.data.access.config;
+package com.curity.mongodb.datasource.config;
 
 import se.curity.identityserver.sdk.config.Configuration;
+import se.curity.identityserver.sdk.config.annotation.DefaultInteger;
+import se.curity.identityserver.sdk.config.annotation.Description;
 import se.curity.identityserver.sdk.service.Json;
-import se.curity.identityserver.sdk.service.WebServiceClient;
 
-public interface CouchbaseDataAccessProviderConfiguration extends Configuration
+public interface MongoDataAccessProviderConfiguration extends Configuration
 {
 
-    WebServiceClient webServiceClient();
+    @Description("Mongo db host, e.g: 127.0.0.1")
+    String getHost();
+
+    @Description("Mongo db port")
+    @DefaultInteger(27017)
+    int getPort();
+
+    @Description("Database to use")
+    String getDatabase();
+
+    @Description("Username used to connect to db")
+    String getUsername();
+
+    @Description("Password used to connect to db")
+    String getPassword();
+
 
     Json json();
-
 }

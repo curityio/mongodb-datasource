@@ -14,10 +14,10 @@
  *  limitations under the License.
  */
 
-package com.couchbase.curity.data.access;
+package com.curity.mongodb.datasource;
 
 
-import com.couchbase.curity.data.access.config.CouchbaseDataAccessProviderConfiguration;
+import com.curity.mongodb.datasource.config.MongoDataAccessProviderConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.curity.identityserver.sdk.Nullable;
@@ -27,30 +27,22 @@ import se.curity.identityserver.sdk.attribute.AuthenticationAttributes;
 import se.curity.identityserver.sdk.attribute.ContextAttributes;
 import se.curity.identityserver.sdk.attribute.SubjectAttributes;
 import se.curity.identityserver.sdk.datasource.CredentialDataAccessProvider;
-import se.curity.identityserver.sdk.errors.ExternalServiceException;
-import se.curity.identityserver.sdk.http.HttpRequest;
-import se.curity.identityserver.sdk.http.HttpResponse;
-import se.curity.identityserver.sdk.http.HttpStatus;
 import se.curity.identityserver.sdk.service.Json;
-import se.curity.identityserver.sdk.service.WebServiceClient;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.couchbase.curity.data.access.Constants.USER_BUCKET_PATH;
-
-public class CouchbaseCredentialDataAccessProvider implements CredentialDataAccessProvider
+public class MongoCredentialDataAccessProvider implements CredentialDataAccessProvider
 {
-    private static final Logger _logger = LoggerFactory.getLogger(CouchbaseCredentialDataAccessProvider.class);
+    private static final Logger _logger = LoggerFactory.getLogger(MongoCredentialDataAccessProvider.class);
 
     private final Json _json;
-    private final WebServiceClient _webServiceClient;
 
     @SuppressWarnings("unused") // used through DI
-    public CouchbaseCredentialDataAccessProvider(CouchbaseDataAccessProviderConfiguration configuration)
+    public MongoCredentialDataAccessProvider(MongoDataAccessProviderConfiguration configuration)
     {
         _json = configuration.json();
-        _webServiceClient = configuration.webServiceClient();
     }
 
     @Override
@@ -70,19 +62,9 @@ public class CouchbaseCredentialDataAccessProvider implements CredentialDataAcce
     @Nullable
     public AuthenticationAttributes verifyPassword(String userName, String password)
     {
-        HttpRequest request = _webServiceClient
-                .withPath(USER_BUCKET_PATH + "/docs/" + userName)
-                .request()
-                .method("GET");
-        HttpResponse couchbaseResponse = request.response();
-        if (couchbaseResponse.statusCode() != HttpStatus.OK.getCode())
-        {
-            throw new ExternalServiceException(couchbaseResponse.body(HttpResponse.asString()));
-        }
+        Map<String, Object> dataMap = new HashMap<>();
 
-        Map<String, Object> dataMap = _json.fromJson(couchbaseResponse.body(HttpResponse.asString()));
-
-        return AuthenticationAttributes.of(SubjectAttributes.of(userName, Attributes.fromMap((Map) dataMap.get("json"))),
+        return AuthenticationAttributes.of(SubjectAttributes.of(userName, Attributes.fromMap(dataMap)),
                 ContextAttributes.empty());
     }
 
