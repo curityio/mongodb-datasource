@@ -29,6 +29,7 @@ import se.curity.identityserver.sdk.datasource.UserAccountDataAccessProvider;
 import java.util.Map;
 
 import static com.curity.mongodb.datasource.Constants.USERS_COLLECTION;
+import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 
 public class MongoUserAccountDataAccessProvider implements UserAccountDataAccessProvider
@@ -43,12 +44,21 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     @Override
     public ResourceAttributes<?> getByUserName(String s, ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
-        return null;
+        return getAccountAttributes("userName", s);
     }
 
     @Override
     public ResourceAttributes<?> getByEmail(String s, ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
+        Map<String, Object> dataMap = _database.getCollection(USERS_COLLECTION)
+                .find(and(eq("emails.value", s), eq("emails.primary", true))).first();
+
+        if (dataMap != null)
+        {
+            dataMap.put("id", dataMap.get("_id").toString());
+            dataMap.remove("_id");
+            return AccountAttributes.fromMap(dataMap);
+        }
         return null;
     }
 
@@ -63,14 +73,24 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     {
         Document document = new Document(accountAttributes.toMap());
         _database.getCollection(USERS_COLLECTION).insertOne(document);
-        Document newDocument = _database.getCollection(USERS_COLLECTION)
-                .find(eq("userName", accountAttributes.getUserName())).first();
 
-        newDocument.put("id", newDocument.get("_id").toString());
-        newDocument.remove("_id");
-        AccountAttributes newAccountAttributes = AccountAttributes.fromMap(newDocument);
+        AccountAttributes newAccountAttributes = getAccountAttributes("userName", accountAttributes.getUserName());
         newAccountAttributes = newAccountAttributes.removeAttribute("password");
         return newAccountAttributes;
+    }
+
+    public AccountAttributes getAccountAttributes(String key, String value)
+    {
+        Map<String, Object> dataMap = _database.getCollection(USERS_COLLECTION)
+                .find(eq(key, value)).first();
+
+        if (dataMap != null)
+        {
+            dataMap.put("id", dataMap.get("_id").toString());
+            dataMap.remove("_id");
+            return AccountAttributes.fromMap(dataMap);
+        }
+        return null;
     }
 
     @Override
