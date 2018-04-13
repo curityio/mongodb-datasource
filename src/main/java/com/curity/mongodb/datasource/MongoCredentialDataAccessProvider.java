@@ -18,6 +18,7 @@ package com.curity.mongodb.datasource;
 
 
 import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.curity.identityserver.sdk.Nullable;
@@ -30,6 +31,9 @@ import se.curity.identityserver.sdk.attribute.SubjectAttributes;
 import se.curity.identityserver.sdk.datasource.CredentialDataAccessProvider;
 
 import java.util.Optional;
+
+import static com.curity.mongodb.datasource.Constants.USERS_COLLECTION;
+import static com.mongodb.client.model.Filters.eq;
 
 public class MongoCredentialDataAccessProvider implements CredentialDataAccessProvider
 {
@@ -47,16 +51,18 @@ public class MongoCredentialDataAccessProvider implements CredentialDataAccessPr
     }
 
     @Override
-    public void updatePassword(AccountAttributes account)
+    public void updatePassword(AccountAttributes accountAttributes)
     {
-        String subjectId = account.getUserName();
-        Optional<String> newPassword = Optional.ofNullable(account.getPassword());
+        String userName = accountAttributes.getUserName();
+        Optional<String> newPassword = Optional.ofNullable(accountAttributes.getPassword());
 
         if (!newPassword.isPresent())
         {
             _logger.warn("Cannot update account password, missing password value");
             return;
         }
+        _database.getCollection(USERS_COLLECTION).updateOne(eq("userName", userName),
+                new Document("$set", new Document("password", newPassword.get())));
     }
 
     @Override
