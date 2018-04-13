@@ -22,8 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.curity.identityserver.sdk.Nullable;
 import se.curity.identityserver.sdk.attribute.AccountAttributes;
+import se.curity.identityserver.sdk.attribute.Attributes;
 import se.curity.identityserver.sdk.attribute.AuthenticationAttributes;
 import se.curity.identityserver.sdk.attribute.ContextAttributes;
+import se.curity.identityserver.sdk.attribute.SubjectAttributes;
 import se.curity.identityserver.sdk.datasource.CredentialDataAccessProvider;
 import se.curity.identityserver.sdk.errors.ExternalServiceException;
 import se.curity.identityserver.sdk.http.HttpRequest;
@@ -32,7 +34,6 @@ import se.curity.identityserver.sdk.http.HttpStatus;
 import se.curity.identityserver.sdk.service.Json;
 import se.curity.identityserver.sdk.service.WebServiceClient;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -80,15 +81,9 @@ public class CouchbaseCredentialDataAccessProvider implements CredentialDataAcce
         }
 
         Map<String, Object> dataMap = _json.fromJson(couchbaseResponse.body(HttpResponse.asString()));
-        AccountAttributes accountAttributes = AccountAttributes.fromMap((Map) dataMap.get("json"));
 
-        if (!password.equals(accountAttributes.getPassword()))
-        {
-            throw new ExternalServiceException("Bad credentials");
-        }
-
-        return AuthenticationAttributes.of(userName,
-                ContextAttributes.of(Collections.singletonMap("userName", userName)));
+        return AuthenticationAttributes.of(SubjectAttributes.of(userName, Attributes.fromMap((Map) dataMap.get("json"))),
+                ContextAttributes.empty());
     }
 
     @Override
