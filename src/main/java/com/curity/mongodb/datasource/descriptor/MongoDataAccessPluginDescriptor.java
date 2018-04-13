@@ -1,16 +1,19 @@
 package com.curity.mongodb.datasource.descriptor;
 
+import com.curity.mongodb.datasource.ConnectionPool;
 import com.curity.mongodb.datasource.MongoCredentialDataAccessProvider;
 import com.curity.mongodb.datasource.MongoUserAccountDataAccessProvider;
 import com.curity.mongodb.datasource.config.MongoDataAccessProviderConfiguration;
 import se.curity.identityserver.sdk.Nullable;
-import se.curity.identityserver.sdk.config.Configuration;
 import se.curity.identityserver.sdk.datasource.AttributeDataAccessProvider;
 import se.curity.identityserver.sdk.datasource.CredentialDataAccessProvider;
 import se.curity.identityserver.sdk.datasource.UserAccountDataAccessProvider;
+import se.curity.identityserver.sdk.plugin.ManagedObject;
 import se.curity.identityserver.sdk.plugin.descriptor.DataAccessProviderPluginDescriptor;
 
-public final class MongoDataAccessPluginDescriptor implements DataAccessProviderPluginDescriptor
+import java.util.Optional;
+
+public final class MongoDataAccessPluginDescriptor implements DataAccessProviderPluginDescriptor<MongoDataAccessProviderConfiguration>
 {
     @Override
     public String getPluginImplementationType()
@@ -19,7 +22,7 @@ public final class MongoDataAccessPluginDescriptor implements DataAccessProvider
     }
 
     @Override
-    public Class<? extends Configuration> getConfigurationType()
+    public Class<MongoDataAccessProviderConfiguration> getConfigurationType()
     {
         return MongoDataAccessProviderConfiguration.class;
     }
@@ -45,5 +48,12 @@ public final class MongoDataAccessPluginDescriptor implements DataAccessProvider
     public Class<? extends AttributeDataAccessProvider> getAttributeDataAccessProvider()
     {
         return AttributeDataAccessProvider.class;
+    }
+
+
+    public Optional<? extends ManagedObject<MongoDataAccessProviderConfiguration>> createManagedObject(
+            MongoDataAccessProviderConfiguration configuration)
+    {
+        return Optional.of(new ConnectionPool(configuration));
     }
 }
