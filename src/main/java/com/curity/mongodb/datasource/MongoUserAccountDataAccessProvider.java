@@ -29,43 +29,34 @@ import se.curity.identityserver.sdk.datasource.UserAccountDataAccessProvider;
 import java.util.Map;
 
 import static com.curity.mongodb.datasource.Constants.USERS_COLLECTION;
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.eq;
 
 public class MongoUserAccountDataAccessProvider implements UserAccountDataAccessProvider
 {
     private final MongoDatabase _database;
+    private final MongoUtils _mongoUtils;
 
     public MongoUserAccountDataAccessProvider(ConnectionPool connectionPool)
     {
         _database = connectionPool.getDatabase();
+        _mongoUtils = new MongoUtils(_database);
     }
 
     @Override
     public ResourceAttributes<?> getByUserName(String s, ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
-        return getAccountAttributes("userName", s);
+        return _mongoUtils.getAccountAttributes("userName", s, false);
     }
 
     @Override
     public ResourceAttributes<?> getByEmail(String s, ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
-        Map<String, Object> dataMap = _database.getCollection(USERS_COLLECTION)
-                .find(and(eq("emails.value", s), eq("emails.primary", true))).first();
-
-        if (dataMap != null)
-        {
-            dataMap.put("id", dataMap.get("_id").toString());
-            dataMap.remove("_id");
-            return AccountAttributes.fromMap(dataMap);
-        }
-        return null;
+        return _mongoUtils.getAccountAttributes("emails", s, true);
     }
 
     @Override
     public ResourceAttributes<?> getByPhone(String s, ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
-        return null;
+        return _mongoUtils.getAccountAttributes("phoneNumbers", s, true);
     }
 
     @Override
@@ -74,23 +65,9 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
         Document document = new Document(accountAttributes.toMap());
         _database.getCollection(USERS_COLLECTION).insertOne(document);
 
-        AccountAttributes newAccountAttributes = getAccountAttributes("userName", accountAttributes.getUserName());
+        AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes("userName", accountAttributes.getUserName(), false);
         newAccountAttributes = newAccountAttributes.removeAttribute("password");
         return newAccountAttributes;
-    }
-
-    public AccountAttributes getAccountAttributes(String key, String value)
-    {
-        Map<String, Object> dataMap = _database.getCollection(USERS_COLLECTION)
-                .find(eq(key, value)).first();
-
-        if (dataMap != null)
-        {
-            dataMap.put("id", dataMap.get("_id").toString());
-            dataMap.remove("_id");
-            return AccountAttributes.fromMap(dataMap);
-        }
-        return null;
     }
 
     @Override
