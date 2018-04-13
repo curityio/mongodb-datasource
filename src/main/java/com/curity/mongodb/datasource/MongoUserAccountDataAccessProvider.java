@@ -29,6 +29,7 @@ import se.curity.identityserver.sdk.datasource.UserAccountDataAccessProvider;
 import java.util.Map;
 
 import static com.curity.mongodb.datasource.Constants.USERS_COLLECTION;
+import static com.mongodb.client.model.Filters.eq;
 
 public class MongoUserAccountDataAccessProvider implements UserAccountDataAccessProvider
 {
@@ -62,8 +63,14 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     {
         Document document = new Document(accountAttributes.toMap());
         _database.getCollection(USERS_COLLECTION).insertOne(document);
-        accountAttributes = accountAttributes.removeAttribute("password");
-        return accountAttributes;
+        Document newDocument = _database.getCollection(USERS_COLLECTION)
+                .find(eq("userName", accountAttributes.getUserName())).first();
+
+        newDocument.put("id", newDocument.get("_id").toString());
+        newDocument.remove("_id");
+        AccountAttributes newAccountAttributes = AccountAttributes.fromMap(newDocument);
+        newAccountAttributes = newAccountAttributes.removeAttribute("password");
+        return newAccountAttributes;
     }
 
     @Override
