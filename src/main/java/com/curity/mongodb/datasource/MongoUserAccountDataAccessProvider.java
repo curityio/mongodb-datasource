@@ -26,9 +26,11 @@ import se.curity.identityserver.sdk.data.query.ResourceQueryResult;
 import se.curity.identityserver.sdk.data.update.AttributeUpdate;
 import se.curity.identityserver.sdk.datasource.UserAccountDataAccessProvider;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.curity.mongodb.datasource.Constants.USERS_COLLECTION;
+import static com.mongodb.client.model.Filters.eq;
 
 public class MongoUserAccountDataAccessProvider implements UserAccountDataAccessProvider
 {
@@ -65,27 +67,46 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
         Document document = new Document(accountAttributes.toMap());
         _database.getCollection(USERS_COLLECTION).insertOne(document);
 
-        AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes("userName", accountAttributes.getUserName(), false);
+        AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes("userName",
+                accountAttributes.getUserName(), false);
         newAccountAttributes = newAccountAttributes.removeAttribute("password");
         return newAccountAttributes;
     }
 
     @Override
-    public ResourceAttributes<?> update(AccountAttributes accountAttributes, ResourceQuery.AttributesEnumeration attributesEnumeration)
+    public ResourceAttributes<?> update(AccountAttributes accountAttributes,
+                                        ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
-        return null;
+        _database.getCollection(USERS_COLLECTION).updateOne(eq("userName", accountAttributes.getUserName()),
+                new Document("$set", new Document(accountAttributes.toMap())));
+        AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes("userName",
+                accountAttributes.getUserName(), false);
+
+        return filterAttributes(newAccountAttributes.toMap(), attributesEnumeration);
     }
 
     @Override
-    public ResourceAttributes<?> update(String s, Map<String, Object> map, ResourceQuery.AttributesEnumeration attributesEnumeration)
+    public ResourceAttributes<?> update(String s, Map<String, Object> map,
+                                        ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
-        return null;
+        _database.getCollection(USERS_COLLECTION).updateOne(eq("userName", s),
+                new Document("$set", new Document(map)));
+        AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes("userName", s, false);
+
+        return filterAttributes(newAccountAttributes.toMap(), attributesEnumeration);
     }
 
     @Override
-    public ResourceAttributes<?> patch(String s, AttributeUpdate attributeUpdate, ResourceQuery.AttributesEnumeration attributesEnumeration)
+    public ResourceAttributes<?> patch(String s, AttributeUpdate attributeUpdate,
+                                       ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
-        return null;
+        Map<String, Object> dataMap = attributeUpdate.getAttributeReplacements().toMap();
+        dataMap.putAll(attributeUpdate.getAttributeAdditions().toMap());
+        _database.getCollection(USERS_COLLECTION).updateOne(eq("userName", s),
+                new Document("$set", new Document(dataMap)));
+        AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes("userName", s, false);
+
+        return filterAttributes(newAccountAttributes.toMap(), attributesEnumeration);
     }
 
     @Override
@@ -97,12 +118,24 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     @Override
     public void delete(String s)
     {
-
+        _database.getCollection(USERS_COLLECTION).deleteOne(eq("userName", s));
     }
 
     @Override
     public ResourceQueryResult getAll(long l, long l1)
     {
         return null;
+    }
+
+    private ResourceAttributes<?> filterAttributes(Map<String, Object> attributesMap,
+                                                   ResourceQuery.AttributesEnumeration attributesEnumeration)
+    {
+        Map<String, Object> newAttributesMap = new HashMap<>(attributesMap.size());
+        attributesEnumeration.getAttributes().forEach(attribute ->
+        {
+            newAttributesMap.put(attribute, attributesMap.get(attribute));
+        });
+
+        return ResourceAttributes.fromMap(newAttributesMap);
     }
 }
