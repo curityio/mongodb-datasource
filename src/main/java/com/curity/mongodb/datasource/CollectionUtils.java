@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Curity AB. All rights reserved.
+ * Copyright (C) 2018 Curity AB. All rights reserved.
  *
  * The contents of this file are the property of Curity AB.
  * You may not copy or use this file, in either source code
