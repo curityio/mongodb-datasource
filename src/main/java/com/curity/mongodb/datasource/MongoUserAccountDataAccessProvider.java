@@ -30,8 +30,8 @@ import se.curity.identityserver.sdk.datasource.UserAccountDataAccessProvider;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.curity.mongodb.datasource.Constants.USERS_COLLECTION;
 import static com.mongodb.client.model.Filters.eq;
+import static se.curity.identityserver.sdk.attribute.AccountAttributes.RESOURCE_TYPE;
 
 public class MongoUserAccountDataAccessProvider implements UserAccountDataAccessProvider
 {
@@ -66,7 +66,7 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     public AccountAttributes create(AccountAttributes accountAttributes)
     {
         Document document = new Document(accountAttributes.toMap());
-        _database.getCollection(USERS_COLLECTION).insertOne(document);
+        _database.getCollection(RESOURCE_TYPE).insertOne(document);
 
         AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes("userName",
                 accountAttributes.getUserName(), false);
@@ -78,7 +78,7 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     public ResourceAttributes<?> update(AccountAttributes accountAttributes,
                                         ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
-        _database.getCollection(USERS_COLLECTION).updateOne(eq("userName", accountAttributes.getUserName()),
+        _database.getCollection(RESOURCE_TYPE).updateOne(eq("userName", accountAttributes.getUserName()),
                 new Document("$set", new Document(accountAttributes.toMap())));
         AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes("userName",
                 accountAttributes.getUserName(), false);
@@ -90,7 +90,7 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     public ResourceAttributes<?> update(String accountId, Map<String, Object> map,
                                         ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
-        _database.getCollection(USERS_COLLECTION).updateOne(eq("_id", new ObjectId(accountId)),
+        _database.getCollection(RESOURCE_TYPE).updateOne(eq("_id", new ObjectId(accountId)),
                 new Document("$set", new Document(map)));
         AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes(accountId);
 
@@ -103,7 +103,7 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     {
         Map<String, Object> dataMap = attributeUpdate.getAttributeReplacements().toMap();
         dataMap.putAll(attributeUpdate.getAttributeAdditions().toMap());
-        _database.getCollection(USERS_COLLECTION).updateOne(eq("_id", new ObjectId(accountId)),
+        _database.getCollection(RESOURCE_TYPE).updateOne(eq("_id", new ObjectId(accountId)),
                 new Document("$set", new Document(dataMap)));
         AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes(accountId);
 
@@ -119,7 +119,7 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     @Override
     public void delete(String accountId)
     {
-        _database.getCollection(USERS_COLLECTION).deleteOne(eq("_id", new ObjectId(accountId)));
+        _database.getCollection(RESOURCE_TYPE).deleteOne(eq("_id", new ObjectId(accountId)));
     }
 
     @Override
@@ -133,9 +133,7 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     {
         Map<String, Object> newAttributesMap = new HashMap<>(attributesMap.size());
         attributesEnumeration.getAttributes().forEach(attribute ->
-        {
-            newAttributesMap.put(attribute, attributesMap.get(attribute));
-        });
+                newAttributesMap.put(attribute, attributesMap.get(attribute)));
 
         return ResourceAttributes.fromMap(newAttributesMap);
     }

@@ -23,9 +23,9 @@ import se.curity.identityserver.sdk.attribute.AccountAttributes;
 
 import java.util.Map;
 
-import static com.curity.mongodb.datasource.Constants.USERS_COLLECTION;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
+import static se.curity.identityserver.sdk.attribute.AccountAttributes.RESOURCE_TYPE;
 
 public class MongoUtils
 {
@@ -44,7 +44,7 @@ public class MongoUtils
         filters = isPrimary ? and(eq(key + ".value", value), eq(key + ".primary", true))
                 : eq(key, value);
 
-        dataMap = _database.getCollection(USERS_COLLECTION)
+        dataMap = _database.getCollection(RESOURCE_TYPE)
                 .find(filters).first();
 
         return getAccountAttributes(dataMap);
@@ -52,7 +52,7 @@ public class MongoUtils
 
     public AccountAttributes getAccountAttributes(String accountId)
     {
-        Map<String, Object> dataMap = _database.getCollection(USERS_COLLECTION)
+        Map<String, Object> dataMap = _database.getCollection(RESOURCE_TYPE)
                 .find(eq("_id", new ObjectId(accountId))).first();
 
         return getAccountAttributes(dataMap);

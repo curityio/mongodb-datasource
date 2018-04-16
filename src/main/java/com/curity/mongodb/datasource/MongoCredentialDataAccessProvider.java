@@ -32,8 +32,8 @@ import se.curity.identityserver.sdk.datasource.CredentialDataAccessProvider;
 
 import java.util.Optional;
 
-import static com.curity.mongodb.datasource.Constants.USERS_COLLECTION;
 import static com.mongodb.client.model.Filters.eq;
+import static se.curity.identityserver.sdk.attribute.AccountAttributes.RESOURCE_TYPE;
 
 public class MongoCredentialDataAccessProvider implements CredentialDataAccessProvider
 {
@@ -61,7 +61,7 @@ public class MongoCredentialDataAccessProvider implements CredentialDataAccessPr
             _logger.warn("Cannot update account password, missing password value");
             return;
         }
-        _database.getCollection(USERS_COLLECTION).updateOne(eq("userName", userName),
+        _database.getCollection(RESOURCE_TYPE).updateOne(eq("userName", userName),
                 new Document("$set", new Document("password", newPassword.get())));
     }
 
