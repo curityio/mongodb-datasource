@@ -69,7 +69,7 @@ public class MongoCredentialDataAccessProvider implements CredentialDataAccessPr
     @Nullable
     public AuthenticationAttributes verifyPassword(String userName, String password)
     {
-        Attributes accountAttributes = _mongoUtils.getAccountAttributes("userName", userName, false);
+        Attributes accountAttributes = _mongoUtils.getAccountAttributes("userName", userName, false, null);
         if (accountAttributes == null)
         {
             accountAttributes = Attributes.of(Attribute.of("password", ""));

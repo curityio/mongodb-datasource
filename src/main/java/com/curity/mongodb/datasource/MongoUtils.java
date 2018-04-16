@@ -20,11 +20,14 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import se.curity.identityserver.sdk.attribute.AccountAttributes;
+import se.curity.identityserver.sdk.data.query.ResourceQuery;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Projections.include;
 
 public class MongoUtils
 {
@@ -52,18 +55,28 @@ public class MongoUtils
                 : eq(key, value);
     }
 
-    public AccountAttributes getAccountAttributes(String key, String value, boolean hasPrimaryAttribute)
+    public AccountAttributes getAccountAttributes(String key, String value, boolean hasPrimaryAttribute,
+                                                  ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
-        Map<String, Object> dataMap = _database.getCollection(AccountAttributes.RESOURCE_TYPE)
-                .find(buildFilter(key, value, hasPrimaryAttribute)).first();
+        Map<String, Object> dataMap = attributesEnumeration == null ?
+                _database.getCollection(AccountAttributes.RESOURCE_TYPE)
+                        .find(buildFilter(key, value, hasPrimaryAttribute)).first() :
+                _database.getCollection(AccountAttributes.RESOURCE_TYPE)
+                        .find(buildFilter(key, value, hasPrimaryAttribute))
+                        .projection(include(new ArrayList<>(attributesEnumeration.getAttributes()))).first();
 
         return getAccountAttributes(dataMap);
     }
 
-    public AccountAttributes getAccountAttributes(String accountId)
+    public AccountAttributes getAccountAttributes(String accountId,
+                                                  ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
-        Map<String, Object> dataMap = _database.getCollection(AccountAttributes.RESOURCE_TYPE)
-                .find(eq("_id", new ObjectId(accountId))).first();
+        Map<String, Object> dataMap = attributesEnumeration == null ?
+                _database.getCollection(AccountAttributes.RESOURCE_TYPE)
+                        .find(eq("_id", new ObjectId(accountId))).first() :
+                _database.getCollection(AccountAttributes.RESOURCE_TYPE)
+                        .find(eq("_id", new ObjectId(accountId)))
+                        .projection(include(new ArrayList<>(attributesEnumeration.getAttributes()))).first();
 
         return getAccountAttributes(dataMap);
     }

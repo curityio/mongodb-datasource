@@ -26,8 +26,8 @@ import se.curity.identityserver.sdk.data.query.ResourceQuery;
 import se.curity.identityserver.sdk.data.query.ResourceQueryResult;
 import se.curity.identityserver.sdk.data.update.AttributeUpdate;
 import se.curity.identityserver.sdk.datasource.UserAccountDataAccessProvider;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -47,19 +47,19 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     @Override
     public ResourceAttributes<?> getByUserName(String userName, ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
-        return _mongoUtils.getAccountAttributes("userName", userName, false);
+        return _mongoUtils.getAccountAttributes("userName", userName, false, attributesEnumeration);
     }
 
     @Override
     public ResourceAttributes<?> getByEmail(String email, ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
-        return _mongoUtils.getAccountAttributes("emails", email, true);
+        return _mongoUtils.getAccountAttributes("emails", email, true, attributesEnumeration);
     }
 
     @Override
     public ResourceAttributes<?> getByPhone(String phone, ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
-        return _mongoUtils.getAccountAttributes("phoneNumbers", phone, true);
+        return _mongoUtils.getAccountAttributes("phoneNumbers", phone, true, attributesEnumeration);
     }
 
     @Override
@@ -68,10 +68,9 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
         Document document = new Document(accountAttributes.toMap());
         _database.getCollection(RESOURCE_TYPE).insertOne(document);
 
-        AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes("userName",
-                accountAttributes.getUserName(), false);
-        newAccountAttributes = newAccountAttributes.removeAttribute("password");
-        return newAccountAttributes;
+        return _mongoUtils.getAccountAttributes("userName", accountAttributes.getUserName(),
+                false, null)
+                .removeAttribute("password");
     }
 
     @Override
@@ -80,10 +79,9 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     {
         _database.getCollection(RESOURCE_TYPE).updateOne(eq("userName", accountAttributes.getUserName()),
                 new Document("$set", new Document(accountAttributes.toMap())));
-        AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes("userName",
-                accountAttributes.getUserName(), false);
+        return _mongoUtils.getAccountAttributes("userName",
+                accountAttributes.getUserName(), false, attributesEnumeration);
 
-        return filterAttributes(newAccountAttributes.toMap(), attributesEnumeration);
     }
 
     @Override
@@ -92,9 +90,9 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     {
         _database.getCollection(RESOURCE_TYPE).updateOne(eq("_id", new ObjectId(accountId)),
                 new Document("$set", new Document(map)));
-        AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes(accountId);
 
-        return filterAttributes(newAccountAttributes.toMap(), attributesEnumeration);
+        return _mongoUtils.getAccountAttributes(accountId, attributesEnumeration);
+
     }
 
     @Override
@@ -105,15 +103,14 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
         dataMap.putAll(attributeUpdate.getAttributeAdditions().toMap());
         _database.getCollection(RESOURCE_TYPE).updateOne(eq("_id", new ObjectId(accountId)),
                 new Document("$set", new Document(dataMap)));
-        AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes(accountId);
 
-        return filterAttributes(newAccountAttributes.toMap(), attributesEnumeration);
+        return _mongoUtils.getAccountAttributes(accountId, attributesEnumeration);
     }
 
     @Override
     public void link(String localUserName, String foreignDomainName, String foreignUserName)
     {
-
+        throw new NotImplementedException();
     }
 
     @Override
@@ -125,16 +122,6 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     @Override
     public ResourceQueryResult getAll(long startIndex, long count)
     {
-        return null;
-    }
-
-    private ResourceAttributes<?> filterAttributes(Map<String, Object> attributesMap,
-                                                   ResourceQuery.AttributesEnumeration attributesEnumeration)
-    {
-        Map<String, Object> newAttributesMap = new HashMap<>(attributesMap.size());
-        attributesEnumeration.getAttributes().forEach(attribute ->
-                newAttributesMap.put(attribute, attributesMap.get(attribute)));
-
-        return ResourceAttributes.fromMap(newAttributesMap);
+        throw new NotImplementedException();
     }
 }
