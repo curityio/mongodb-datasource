@@ -44,21 +44,21 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     }
 
     @Override
-    public ResourceAttributes<?> getByUserName(String s, ResourceQuery.AttributesEnumeration attributesEnumeration)
+    public ResourceAttributes<?> getByUserName(String usernName, ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
-        return _mongoUtils.getAccountAttributes("userName", s, false);
+        return _mongoUtils.getAccountAttributes("userName", usernName, false);
     }
 
     @Override
-    public ResourceAttributes<?> getByEmail(String s, ResourceQuery.AttributesEnumeration attributesEnumeration)
+    public ResourceAttributes<?> getByEmail(String email, ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
-        return _mongoUtils.getAccountAttributes("emails", s, true);
+        return _mongoUtils.getAccountAttributes("emails", email, true);
     }
 
     @Override
-    public ResourceAttributes<?> getByPhone(String s, ResourceQuery.AttributesEnumeration attributesEnumeration)
+    public ResourceAttributes<?> getByPhone(String phone, ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
-        return _mongoUtils.getAccountAttributes("phoneNumbers", s, true);
+        return _mongoUtils.getAccountAttributes("phoneNumbers", phone, true);
     }
 
     @Override
@@ -86,25 +86,25 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     }
 
     @Override
-    public ResourceAttributes<?> update(String s, Map<String, Object> map,
+    public ResourceAttributes<?> update(String userName, Map<String, Object> map,
                                         ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
-        _database.getCollection(USERS_COLLECTION).updateOne(eq("userName", s),
+        _database.getCollection(USERS_COLLECTION).updateOne(eq("userName", userName),
                 new Document("$set", new Document(map)));
-        AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes("userName", s, false);
+        AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes("userName", userName, false);
 
         return filterAttributes(newAccountAttributes.toMap(), attributesEnumeration);
     }
 
     @Override
-    public ResourceAttributes<?> patch(String s, AttributeUpdate attributeUpdate,
+    public ResourceAttributes<?> patch(String userName, AttributeUpdate attributeUpdate,
                                        ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
         Map<String, Object> dataMap = attributeUpdate.getAttributeReplacements().toMap();
         dataMap.putAll(attributeUpdate.getAttributeAdditions().toMap());
-        _database.getCollection(USERS_COLLECTION).updateOne(eq("userName", s),
+        _database.getCollection(USERS_COLLECTION).updateOne(eq("userName", userName),
                 new Document("$set", new Document(dataMap)));
-        AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes("userName", s, false);
+        AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes("userName", userName, false);
 
         return filterAttributes(newAccountAttributes.toMap(), attributesEnumeration);
     }
@@ -116,9 +116,9 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     }
 
     @Override
-    public void delete(String s)
+    public void delete(String userName)
     {
-        _database.getCollection(USERS_COLLECTION).deleteOne(eq("userName", s));
+        _database.getCollection(USERS_COLLECTION).deleteOne(eq("userName", userName));
     }
 
     @Override
