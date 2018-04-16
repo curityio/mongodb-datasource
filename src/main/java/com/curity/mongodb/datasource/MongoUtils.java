@@ -25,7 +25,6 @@ import java.util.Map;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
-import static se.curity.identityserver.sdk.attribute.AccountAttributes.RESOURCE_TYPE;
 
 public class MongoUtils
 {
@@ -34,28 +33,6 @@ public class MongoUtils
     public MongoUtils(MongoDatabase database)
     {
         _database = database;
-    }
-
-    public AccountAttributes getAccountAttributes(String key, String value, boolean isPrimary)
-    {
-        Map<String, Object> dataMap;
-        Bson filters;
-
-        filters = isPrimary ? and(eq(key + ".value", value), eq(key + ".primary", true))
-                : eq(key, value);
-
-        dataMap = _database.getCollection(RESOURCE_TYPE)
-                .find(filters).first();
-
-        return getAccountAttributes(dataMap);
-    }
-
-    public AccountAttributes getAccountAttributes(String accountId)
-    {
-        Map<String, Object> dataMap = _database.getCollection(RESOURCE_TYPE)
-                .find(eq("_id", new ObjectId(accountId))).first();
-
-        return getAccountAttributes(dataMap);
     }
 
     private AccountAttributes getAccountAttributes(Map<String, Object> dataMap)
@@ -67,5 +44,27 @@ public class MongoUtils
             return AccountAttributes.fromMap(dataMap);
         }
         return null;
+    }
+
+    private Bson buildFilter(String key, String value, boolean hasPrimaryAttribute)
+    {
+        return hasPrimaryAttribute ? and(eq(key + ".value", value), eq(key + ".primary", true))
+                : eq(key, value);
+    }
+
+    public AccountAttributes getAccountAttributes(String key, String value, boolean hasPrimaryAttribute)
+    {
+        Map<String, Object> dataMap = _database.getCollection(AccountAttributes.RESOURCE_TYPE)
+                .find(buildFilter(key, value, hasPrimaryAttribute)).first();
+
+        return getAccountAttributes(dataMap);
+    }
+
+    public AccountAttributes getAccountAttributes(String accountId)
+    {
+        Map<String, Object> dataMap = _database.getCollection(AccountAttributes.RESOURCE_TYPE)
+                .find(eq("_id", new ObjectId(accountId))).first();
+
+        return getAccountAttributes(dataMap);
     }
 }

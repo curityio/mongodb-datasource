@@ -123,7 +123,7 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     }
 
     @Override
-    public ResourceQueryResult getAll(long l, long l1)
+    public ResourceQueryResult getAll(long startIndex, long count)
     {
         return null;
     }
