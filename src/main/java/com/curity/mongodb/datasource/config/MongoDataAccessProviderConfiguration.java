@@ -18,6 +18,7 @@ package com.curity.mongodb.datasource.config;
 
 import se.curity.identityserver.sdk.config.Configuration;
 import se.curity.identityserver.sdk.config.annotation.DefaultInteger;
+import se.curity.identityserver.sdk.config.annotation.DefaultString;
 import se.curity.identityserver.sdk.config.annotation.Description;
 import se.curity.identityserver.sdk.service.Json;
 
@@ -25,6 +26,7 @@ public interface MongoDataAccessProviderConfiguration extends Configuration
 {
 
     @Description("Mongo db host, e.g: 127.0.0.1")
+    @DefaultString("127.0.0.1")
     String getHost();
 
     @Description("Mongo db port")

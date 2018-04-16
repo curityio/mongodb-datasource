@@ -19,6 +19,7 @@ package com.curity.mongodb.datasource;
 
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
+import org.bson.types.ObjectId;
 import se.curity.identityserver.sdk.attribute.AccountAttributes;
 import se.curity.identityserver.sdk.attribute.scim.v2.ResourceAttributes;
 import se.curity.identityserver.sdk.data.query.ResourceQuery;
@@ -44,9 +45,9 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     }
 
     @Override
-    public ResourceAttributes<?> getByUserName(String usernName, ResourceQuery.AttributesEnumeration attributesEnumeration)
+    public ResourceAttributes<?> getByUserName(String userName, ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
-        return _mongoUtils.getAccountAttributes("userName", usernName, false);
+        return _mongoUtils.getAccountAttributes("userName", userName, false);
     }
 
     @Override
@@ -86,39 +87,39 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     }
 
     @Override
-    public ResourceAttributes<?> update(String userName, Map<String, Object> map,
+    public ResourceAttributes<?> update(String accountId, Map<String, Object> map,
                                         ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
-        _database.getCollection(USERS_COLLECTION).updateOne(eq("userName", userName),
+        _database.getCollection(USERS_COLLECTION).updateOne(eq("_id", new ObjectId(accountId)),
                 new Document("$set", new Document(map)));
-        AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes("userName", userName, false);
+        AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes(accountId);
 
         return filterAttributes(newAccountAttributes.toMap(), attributesEnumeration);
     }
 
     @Override
-    public ResourceAttributes<?> patch(String userName, AttributeUpdate attributeUpdate,
+    public ResourceAttributes<?> patch(String accountId, AttributeUpdate attributeUpdate,
                                        ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
         Map<String, Object> dataMap = attributeUpdate.getAttributeReplacements().toMap();
         dataMap.putAll(attributeUpdate.getAttributeAdditions().toMap());
-        _database.getCollection(USERS_COLLECTION).updateOne(eq("userName", userName),
+        _database.getCollection(USERS_COLLECTION).updateOne(eq("_id", new ObjectId(accountId)),
                 new Document("$set", new Document(dataMap)));
-        AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes("userName", userName, false);
+        AccountAttributes newAccountAttributes = _mongoUtils.getAccountAttributes(accountId);
 
         return filterAttributes(newAccountAttributes.toMap(), attributesEnumeration);
     }
 
     @Override
-    public void link(String s, String s1, String s2)
+    public void link(String localUserName, String foreignDomainName, String foreignUserName)
     {
 
     }
 
     @Override
-    public void delete(String userName)
+    public void delete(String accountId)
     {
-        _database.getCollection(USERS_COLLECTION).deleteOne(eq("userName", userName));
+        _database.getCollection(USERS_COLLECTION).deleteOne(eq("_id", new ObjectId(accountId)));
     }
 
     @Override

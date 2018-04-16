@@ -18,6 +18,7 @@ package com.curity.mongodb.datasource;
 
 import com.mongodb.client.MongoDatabase;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import se.curity.identityserver.sdk.attribute.AccountAttributes;
 
 import java.util.Map;
@@ -46,6 +47,19 @@ public class MongoUtils
         dataMap = _database.getCollection(USERS_COLLECTION)
                 .find(filters).first();
 
+        return getAccountAttributes(dataMap);
+    }
+
+    public AccountAttributes getAccountAttributes(String accountId)
+    {
+        Map<String, Object> dataMap = _database.getCollection(USERS_COLLECTION)
+                .find(eq("_id", new ObjectId(accountId))).first();
+
+        return getAccountAttributes(dataMap);
+    }
+
+    private AccountAttributes getAccountAttributes(Map<String, Object> dataMap)
+    {
         if (dataMap != null)
         {
             dataMap.put("id", dataMap.get("_id").toString());
