@@ -28,7 +28,10 @@ import se.curity.identityserver.sdk.data.update.AttributeUpdate;
 import se.curity.identityserver.sdk.datasource.UserAccountDataAccessProvider;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.mongodb.client.model.Filters.eq;
 import static se.curity.identityserver.sdk.attribute.AccountAttributes.RESOURCE_TYPE;
@@ -122,6 +125,11 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     @Override
     public ResourceQueryResult getAll(long startIndex, long count)
     {
-        throw new NotImplementedException();
+        List<AccountAttributes> accountAttributes = _database.getCollection(RESOURCE_TYPE).find()
+                .skip((int) startIndex)
+                .limit((int) count)
+                .into(new ArrayList<>()).stream()
+                .map(item -> _mongoUtils.getAccountAttributes(item)).collect(Collectors.toList());
+        return new ResourceQueryResult(accountAttributes, accountAttributes.size(), startIndex, count);
     }
 }

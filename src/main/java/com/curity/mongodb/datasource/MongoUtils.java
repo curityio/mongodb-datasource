@@ -38,7 +38,7 @@ public class MongoUtils
         _database = database;
     }
 
-    private AccountAttributes getAccountAttributes(Map<String, Object> dataMap)
+    public AccountAttributes getAccountAttributes(Map<String, Object> dataMap)
     {
         if (dataMap != null)
         {

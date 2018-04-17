@@ -22,7 +22,6 @@ import com.curity.mongodb.datasource.MongoDeviceDataAccessProvider;
 import com.curity.mongodb.datasource.MongoUserAccountDataAccessProvider;
 import com.curity.mongodb.datasource.config.MongoDataAccessProviderConfiguration;
 import se.curity.identityserver.sdk.Nullable;
-import se.curity.identityserver.sdk.datasource.AttributeDataAccessProvider;
 import se.curity.identityserver.sdk.datasource.CredentialDataAccessProvider;
 import se.curity.identityserver.sdk.datasource.DeviceDataAccessProvider;
 import se.curity.identityserver.sdk.datasource.UserAccountDataAccessProvider;
@@ -66,15 +65,6 @@ public final class MongoDataAccessPluginDescriptor implements DataAccessProvider
     {
         return MongoDeviceDataAccessProvider.class;
     }
-
-
-    @Nullable
-    @Override
-    public Class<? extends AttributeDataAccessProvider> getAttributeDataAccessProvider()
-    {
-        return AttributeDataAccessProvider.class;
-    }
-
 
     public Optional<? extends ManagedObject<MongoDataAccessProviderConfiguration>> createManagedObject(
             MongoDataAccessProviderConfiguration configuration)

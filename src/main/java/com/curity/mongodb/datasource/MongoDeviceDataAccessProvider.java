@@ -141,6 +141,17 @@ public class MongoDeviceDataAccessProvider implements DeviceDataAccessProvider
     @Override
     public ResourceQueryResult getAll(long startIndex, long count)
     {
+        List<DeviceAttributes> deviceAttributes = _database.getCollection(RESOURCE_TYPE).find()
+                .skip((int) startIndex)
+                .limit((int) count)
+                .into(new ArrayList<>()).stream()
+                .map(item -> getDeviceAttributes(item)).collect(Collectors.toList());
+        return new ResourceQueryResult(deviceAttributes, deviceAttributes.size(), startIndex, count);
+    }
+
+    @Override
+    public ResourceQueryResult getAll(ResourceQuery query)
+    {
         throw new NotImplementedException();
     }
 
