@@ -149,12 +149,6 @@ public class MongoDeviceDataAccessProvider implements DeviceDataAccessProvider
         return new ResourceQueryResult(deviceAttributes, deviceAttributes.size(), startIndex, count);
     }
 
-    @Override
-    public ResourceQueryResult getAll(ResourceQuery query)
-    {
-        throw new NotImplementedException();
-    }
-
     public DeviceAttributes getDeviceAttributes(Map<String, Object> dataMap)
     {
         if (dataMap != null)
