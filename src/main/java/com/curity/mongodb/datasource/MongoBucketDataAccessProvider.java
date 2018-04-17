@@ -1,6 +1,7 @@
 package com.curity.mongodb.datasource;
 
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import org.bson.Document;
 import se.curity.identityserver.sdk.datasource.BucketDataAccessProvider;
@@ -35,17 +36,12 @@ public class MongoBucketDataAccessProvider implements BucketDataAccessProvider
     {
         dataMap.put("subject", subject);
         dataMap.put("purpose", purpose);
-        if (getAttributes(subject, purpose) == null)
-        {
-            _database.getCollection(RESOURCE_TYPE)
-                    .updateOne(and(eq("subject", subject), eq("purpose", purpose)),
-                            new Document("$set", new Document(dataMap)));
-        }
-        else
-        {
-            _database.getCollection(RESOURCE_TYPE)
-                    .insertOne(new Document(dataMap));
-        }
+
+        _database.getCollection(RESOURCE_TYPE)
+                .updateOne(and(eq("subject", subject), eq("purpose", purpose)),
+                        new Document("$set", new Document(dataMap)),
+                        new UpdateOptions().upsert(true));
+
         return getAttributes(subject, purpose);
     }
 
