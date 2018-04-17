@@ -17,11 +17,13 @@
 package com.curity.mongodb.datasource.descriptor;
 
 import com.curity.mongodb.datasource.ConnectionPool;
+import com.curity.mongodb.datasource.MongoBucketDataAccessProvider;
 import com.curity.mongodb.datasource.MongoCredentialDataAccessProvider;
 import com.curity.mongodb.datasource.MongoDeviceDataAccessProvider;
 import com.curity.mongodb.datasource.MongoUserAccountDataAccessProvider;
 import com.curity.mongodb.datasource.config.MongoDataAccessProviderConfiguration;
 import se.curity.identityserver.sdk.Nullable;
+import se.curity.identityserver.sdk.datasource.BucketDataAccessProvider;
 import se.curity.identityserver.sdk.datasource.CredentialDataAccessProvider;
 import se.curity.identityserver.sdk.datasource.DeviceDataAccessProvider;
 import se.curity.identityserver.sdk.datasource.UserAccountDataAccessProvider;
@@ -64,6 +66,13 @@ public final class MongoDataAccessPluginDescriptor implements DataAccessProvider
     public Class<? extends DeviceDataAccessProvider> getDeviceDataAccessProvider()
     {
         return MongoDeviceDataAccessProvider.class;
+    }
+
+    @Nullable
+    @Override
+    public Class<? extends BucketDataAccessProvider> getBucketDataAccessProvider()
+    {
+        return MongoBucketDataAccessProvider.class;
     }
 
     public Optional<? extends ManagedObject<MongoDataAccessProviderConfiguration>> createManagedObject(
