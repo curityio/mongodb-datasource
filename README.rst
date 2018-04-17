@@ -1,10 +1,10 @@
-Couchbase DAP Plug-in
-=====================
+MongoDB Data Source Plug-in
+===========================
 
-.. image:: https://travis-ci.org/curityio/couchbase-dap.svg?branch=dev
-     :target: https://travis-ci.org/curityio/couchbase-dap
+.. image:: https://travis-ci.org/curityio/mongodb-datasource.svg?branch=dev
+     :target: https://travis-ci.org/curityio/mongodb-datasource
 
-This project provides an opens source Couchbase DAP plug-in for the Curity Identity Server. This allows an administrator to add functionality to Curity which will then enable end users to use Couchbase data source.
+This project provides an opens source MongoDB Data Source plug-in for the Curity Identity Server. This allows an administrator to add functionality to Curity which will then enable end users to use MongoDB data source.
 
 System Requirements
 ~~~~~~~~~~~~~~~~~~~
@@ -25,7 +25,7 @@ The source is very easy to compile. To do so from a shell, issue this command: `
 Installation
 ~~~~~~~~~~~~
 
-To install this plug-in, either download a binary version available from the `releases section of this project's GitHub repository <https://github.com/curityio/couchbase-DAP/releases>`_ or compile it from source (as described above). If you compiled the plug-in from source, the package will be placed in the ``target`` subdirectory. The resulting JAR file or the one downloaded from GitHub needs to placed in the directory ``${IDSVR_HOME}/usr/share/plugins/couchbase``. (The name of the last directory, ``couchbase``, which is the plug-in group, is arbitrary and can be anything.) After doing so, the plug-in will become available as soon as the node is restarted.
+To install this plug-in, either download a binary version available from the `releases section of this project's GitHub repository <https://github.com/curityio/mongodb-datasource/releases>`_ or compile it from source (as described above). If you compiled the plug-in from source, the package will be placed in the ``target`` subdirectory. The resulting JAR file or the one downloaded from GitHub needs to placed in the directory ``${IDSVR_HOME}/usr/share/plugins/mongodb``. (The name of the last directory, ``mongodb``, which is the plug-in group, is arbitrary and can be anything.) After doing so, the plug-in will become available as soon as the node is restarted.
 
 .. note::
 
