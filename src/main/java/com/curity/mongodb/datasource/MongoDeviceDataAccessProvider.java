@@ -20,15 +20,12 @@ package com.curity.mongodb.datasource;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import se.curity.identityserver.sdk.attribute.Attributes;
 import se.curity.identityserver.sdk.attribute.scim.v2.ResourceAttributes;
 import se.curity.identityserver.sdk.attribute.scim.v2.extensions.DeviceAttributes;
 import se.curity.identityserver.sdk.data.query.ResourceQuery;
 import se.curity.identityserver.sdk.data.query.ResourceQueryResult;
 import se.curity.identityserver.sdk.datasource.DeviceDataAccessProvider;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,17 +39,12 @@ import static se.curity.identityserver.sdk.attribute.scim.v2.extensions.DeviceAt
 
 public class MongoDeviceDataAccessProvider implements DeviceDataAccessProvider
 {
-    private static final Logger _logger = LoggerFactory.getLogger(MongoDeviceDataAccessProvider.class);
-
     private final MongoDatabase _database;
-
-    private final MongoUtils _mongoUtils;
 
     @SuppressWarnings("unused") // used through DI
     public MongoDeviceDataAccessProvider(ConnectionPool connectionPool)
     {
         _database = connectionPool.getDatabase();
-        _mongoUtils = new MongoUtils(_database);
     }
 
     @Override
