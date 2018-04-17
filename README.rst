@@ -88,9 +88,17 @@ To create indexes follow the instructions.
 
 4. Create unique index for Bucket DAP by following command.
 
-       ``db.Device.createIndex({'subject': 1, 'purpose': 1}, {unique: true})``
+       ``db.Bucket.createIndex({'subject': 1, 'purpose': 1}, {unique: true})``
 
 After you create above indexes, MongoDB is ready to use.
+
+Required dependencies
+~~~~~~~~~~~~~~~~~~~~~
+Following dependencies/jars must be in plugin group classpath.
+
+1. `bson-3.6.3.jar <http://central.maven.org/maven2/org/mongodb/bson/3.6.3/bson-3.6.3.jar>`_
+2. `mongodb-driver-3.6.3.jar <http://central.maven.org/maven2/org/mongodb/mongo-java-driver/3.6.3/mongo-java-driver-3.6.3.jar>`_
+3. `mongodb-driver-core-3.6.3.jar <http://central.maven.org/maven2/org/mongodb/mongodb-driver-core/3.6.3/mongodb-driver-core-3.6.3.jar>`_
 
 License
 ~~~~~~~
