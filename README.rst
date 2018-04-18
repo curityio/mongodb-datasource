@@ -83,17 +83,25 @@ To create indexes follow the instructions.
 1. Connect to MongoDB (To connect in a shell, Run : ``mongo -u ${username} -p ${password} ${dbName}``)
 2. Create unique index for User Account DAP by following command.
 
-        A. ``db.User.createIndex({userName: 1},{unique: true})``
-        B. ``db.User.createIndex({'emails.value': 1, 'emails.primary': 1}, {'unique': true})``
-        C. ``db.User.createIndex({'phoneNumbers.value': 1, 'phoneNumbers.primary': 1}, {'unique': true})``
+    .. code:: python
+
+            db.User.createIndex({userName: 1},{unique: true});
+
+            db.User.createIndex({'emails.value': 1, 'emails.primary': 1}, {'unique': true});
+
+            db.User.createIndex({'phoneNumbers.value': 1, 'phoneNumbers.primary': 1}, {'unique': true});
 
 3. Create unique index for Device DAP by following command.
 
-        ``db.Device.createIndex({'deviceId': 1, 'accountId': 1}, {unique: true})``
+    .. code:: python
+
+         db.Device.createIndex({'deviceId': 1, 'accountId': 1}, {unique: true})
 
 4. Create unique index for Bucket DAP by following command.
 
-       ``db.Bucket.createIndex({'subject': 1, 'purpose': 1}, {unique: true})``
+    .. code:: python
+
+       db.Bucket.createIndex({'subject': 1, 'purpose': 1}, {unique: true})
 
 After you create above indexes, MongoDB is ready to use.
 
