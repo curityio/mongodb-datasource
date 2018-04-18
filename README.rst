@@ -71,6 +71,9 @@ Once all of these changes are made, they will be staged, but not committed (i.e.
 
 Once the configuration is committed and running, the data source can be used like any other.
 
+    .. note::
+        This data source is not used for token storage.
+
 Configure MongoDB
 ~~~~~~~~~~~~~~~~~
 You need to create MongoDB indexes in order to apply uniqueness constraint.
@@ -80,7 +83,9 @@ To create indexes follow the instructions.
 1. Connect to MongoDB (To connect in a shell, Run : ``mongo -u ${username} -p ${password} ${dbName}``)
 2. Create unique index for User Account DAP by following command.
 
-        ``db.User.createIndex({userName: 1},{unique: true})``
+        A. ``db.User.createIndex({userName: 1},{unique: true})``
+        B. ``db.User.createIndex({'emails.value': 1, 'emails.primary': 1}, {'unique': true})``
+        C. ``db.User.createIndex({'phoneNumbers.value': 1, 'phoneNumbers.primary': 1}, {'unique': true})``
 
 3. Create unique index for Device DAP by following command.
 
