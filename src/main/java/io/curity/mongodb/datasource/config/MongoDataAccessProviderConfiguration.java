@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.curity.mongodb.datasource.config;
+package io.curity.mongodb.datasource.config;
 
 import se.curity.identityserver.sdk.config.Configuration;
 import se.curity.identityserver.sdk.config.annotation.DefaultInteger;

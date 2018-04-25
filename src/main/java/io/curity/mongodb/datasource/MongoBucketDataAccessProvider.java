@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.curity.mongodb.datasource;
+package io.curity.mongodb.datasource;
 
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;

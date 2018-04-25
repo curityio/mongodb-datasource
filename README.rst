@@ -9,7 +9,7 @@ This project provides an opens source MongoDB Data Source plug-in for the Curity
 System Requirements
 ~~~~~~~~~~~~~~~~~~~
 
-* Curity Identity Server 3.0.0 and `its system requirements <https://developer.curity.com/docs/latest/system-admin-guide/system-requirements.html>`_
+* Curity Identity Server 3.0.0 and `its system requirements <https://developer.curity.io/docs/latest/system-admin-guide/system-requirements.html>`_
 
 Requirements for Building from Source
 """""""""""""""""""""""""""""""""""""
@@ -31,7 +31,7 @@ To install this plug-in, either download a binary version available from the `re
 
     The JAR file needs to be deployed to each run-time node and the admin node. For simple test deployments where the admin node is a run-time node, the JAR file only needs to be copied to one location.
 
-For a more detailed explanation of installing plug-ins, refer to the `Curity developer guide <https://developer.curity.com/docs/latest/developer-guide/plugins/index.html#plugin-installation>`_.
+For a more detailed explanation of installing plug-ins, refer to the `Curity developer guide <https://developer.curity.io/docs/latest/developer-guide/plugins/index.html#plugin-installation>`_.
 
 Creating a MongoDB Data Source in Curity
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -121,6 +121,6 @@ This plugin and its associated documentation is listed under the `Apache 2 licen
 More Information
 ~~~~~~~~~~~~~~~~
 
-Please visit `curity.com <https://curity.com/>`_ for more information about the Curity Identity Server.
+Please visit `curity.io <https://curity.io/>`_ for more information about the Curity Identity Server.
 
 Copyright (C) 2018 Curity AB.

@@ -1,1 +1,1 @@
-com.curity.mongodb.datasource.descriptor.MongoDataAccessPluginDescriptor
+io.curity.mongodb.datasource.descriptor.MongoDataAccessPluginDescriptor

@@ -14,9 +14,9 @@
  *  limitations under the License.
  */
 
-package com.curity.mongodb.datasource;
+package io.curity.mongodb.datasource;
 
-import com.curity.mongodb.datasource.config.MongoDataAccessProviderConfiguration;
+import io.curity.mongodb.datasource.config.MongoDataAccessProviderConfiguration;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import com.mongodb.MongoCredential;
