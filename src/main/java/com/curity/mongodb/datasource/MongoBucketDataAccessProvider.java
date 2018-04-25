@@ -20,6 +20,8 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.result.DeleteResult;
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.curity.identityserver.sdk.datasource.BucketDataAccessProvider;
 
 import java.util.Map;
@@ -29,6 +31,7 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class MongoBucketDataAccessProvider implements BucketDataAccessProvider
 {
+    private static final Logger _logger = LoggerFactory.getLogger(MongoBucketDataAccessProvider.class);
 
     private final MongoDatabase _database;
     private final static String RESOURCE_TYPE = "Bucket";
@@ -42,6 +45,7 @@ public class MongoBucketDataAccessProvider implements BucketDataAccessProvider
     @Override
     public Map<String, Object> getAttributes(String subject, String purpose)
     {
+        _logger.debug("Getting bucket attributes with subject: {} , purpose : {}", subject, purpose);
         return _database.getCollection(RESOURCE_TYPE)
                 .find(and(eq("subject", subject), eq("purpose", purpose)))
                 .first();
@@ -52,6 +56,8 @@ public class MongoBucketDataAccessProvider implements BucketDataAccessProvider
     {
         dataMap.put("subject", subject);
         dataMap.put("purpose", purpose);
+
+        _logger.debug("Storing bucket attributes with subject: {} , purpose : {} and data : {}", subject, purpose, dataMap);
 
         _database.getCollection(RESOURCE_TYPE)
                 .updateOne(and(eq("subject", subject), eq("purpose", purpose)),

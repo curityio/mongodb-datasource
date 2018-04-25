@@ -56,6 +56,8 @@ public class MongoCredentialDataAccessProvider implements CredentialDataAccessPr
         String userName = accountAttributes.getUserName();
         Optional<String> newPassword = Optional.ofNullable(accountAttributes.getPassword());
 
+        _logger.debug("Received request to update password for username : {}", userName);
+
         if (!newPassword.isPresent())
         {
             _logger.warn("Cannot update account password, missing password value");
@@ -69,6 +71,8 @@ public class MongoCredentialDataAccessProvider implements CredentialDataAccessPr
     @Nullable
     public AuthenticationAttributes verifyPassword(String userName, String password)
     {
+        _logger.debug("Received request to verify password for username : {}", userName);
+
         Attributes accountAttributes = _mongoUtils.getAccountAttributes("userName", userName, false, null);
         if (accountAttributes == null)
         {
