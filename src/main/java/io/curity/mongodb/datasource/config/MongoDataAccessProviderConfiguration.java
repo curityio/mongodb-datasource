@@ -14,13 +14,12 @@
  *  limitations under the License.
  */
 
-package com.curity.mongodb.datasource.config;
+package io.curity.mongodb.datasource.config;
 
 import se.curity.identityserver.sdk.config.Configuration;
 import se.curity.identityserver.sdk.config.annotation.DefaultInteger;
 import se.curity.identityserver.sdk.config.annotation.DefaultString;
 import se.curity.identityserver.sdk.config.annotation.Description;
-import se.curity.identityserver.sdk.service.Json;
 
 public interface MongoDataAccessProviderConfiguration extends Configuration
 {
@@ -41,7 +40,4 @@ public interface MongoDataAccessProviderConfiguration extends Configuration
 
     @Description("Password used to connect to db")
     String getPassword();
-
-
-    Json json();
 }

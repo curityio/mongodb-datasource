@@ -14,12 +14,14 @@
  *  limitations under the License.
  */
 
-package com.curity.mongodb.datasource;
+package io.curity.mongodb.datasource;
 
 
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.curity.identityserver.sdk.attribute.AccountAttributes;
 import se.curity.identityserver.sdk.attribute.scim.v2.ResourceAttributes;
 import se.curity.identityserver.sdk.data.query.ResourceQuery;
@@ -38,6 +40,8 @@ import static se.curity.identityserver.sdk.attribute.AccountAttributes.RESOURCE_
 
 public class MongoUserAccountDataAccessProvider implements UserAccountDataAccessProvider
 {
+    private static final Logger _logger = LoggerFactory.getLogger(MongoUserAccountDataAccessProvider.class);
+
     private final MongoDatabase _database;
     private final MongoUtils _mongoUtils;
 
@@ -50,24 +54,28 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     @Override
     public ResourceAttributes<?> getByUserName(String userName, ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
+        _logger.debug("Received request to get account by username : {}", userName);
         return _mongoUtils.getAccountAttributes("userName", userName, false, attributesEnumeration);
     }
 
     @Override
     public ResourceAttributes<?> getByEmail(String email, ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
+        _logger.debug("Received request to get account by email : {}", email);
         return _mongoUtils.getAccountAttributes("emails", email, true, attributesEnumeration);
     }
 
     @Override
     public ResourceAttributes<?> getByPhone(String phone, ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
+        _logger.debug("Received request to get account by phone number : {}", phone);
         return _mongoUtils.getAccountAttributes("phoneNumbers", phone, true, attributesEnumeration);
     }
 
     @Override
     public AccountAttributes create(AccountAttributes accountAttributes)
     {
+        _logger.debug("Received request to create account with data : {}", accountAttributes);
         Document document = new Document(accountAttributes.toMap());
         _database.getCollection(RESOURCE_TYPE).insertOne(document);
 
@@ -80,6 +88,7 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     public ResourceAttributes<?> update(AccountAttributes accountAttributes,
                                         ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
+        _logger.debug("Received request to update account with data : {}", accountAttributes);
         _database.getCollection(RESOURCE_TYPE).updateOne(eq("userName", accountAttributes.getUserName()),
                 new Document("$set", new Document(accountAttributes.toMap())));
         return _mongoUtils.getAccountAttributes("userName",
@@ -91,6 +100,7 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     public ResourceAttributes<?> update(String accountId, Map<String, Object> map,
                                         ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
+        _logger.debug("Received request to update account with id:{} and  data : {}", accountId, map);
         _database.getCollection(RESOURCE_TYPE).updateOne(eq("_id", new ObjectId(accountId)),
                 new Document("$set", new Document(map)));
 
@@ -102,6 +112,7 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     public ResourceAttributes<?> patch(String accountId, AttributeUpdate attributeUpdate,
                                        ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
+        _logger.debug("Received patch request with accountId:{} and  data : {}", accountId, attributeUpdate);
         Map<String, Object> dataMap = attributeUpdate.getAttributeReplacements().toMap();
         dataMap.putAll(attributeUpdate.getAttributeAdditions().toMap());
         _database.getCollection(RESOURCE_TYPE).updateOne(eq("_id", new ObjectId(accountId)),
@@ -119,12 +130,14 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     @Override
     public void delete(String accountId)
     {
+        _logger.debug("Received request to delete account with accountId: {}", accountId);
         _database.getCollection(RESOURCE_TYPE).deleteOne(eq("_id", new ObjectId(accountId)));
     }
 
     @Override
     public ResourceQueryResult getAll(long startIndex, long count)
     {
+        _logger.debug("Received request to get all accounts with startIndex :{} and count: {}", startIndex, count);
         List<AccountAttributes> accountAttributes = _database.getCollection(RESOURCE_TYPE).find()
                 .skip((int) startIndex)
                 .limit((int) count)
