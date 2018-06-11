@@ -22,6 +22,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import se.curity.identityserver.sdk.attribute.AccountAttributes;
 import se.curity.identityserver.sdk.attribute.scim.v2.ResourceAttributes;
+import se.curity.identityserver.sdk.attribute.scim.v2.extensions.LinkedAccount;
 import se.curity.identityserver.sdk.data.query.ResourceQuery;
 import se.curity.identityserver.sdk.data.query.ResourceQueryResult;
 import se.curity.identityserver.sdk.data.update.AttributeUpdate;
@@ -29,6 +30,7 @@ import se.curity.identityserver.sdk.datasource.UserAccountDataAccessProvider;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -110,8 +112,28 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
         return _mongoUtils.getAccountAttributes(accountId, attributesEnumeration);
     }
 
+    // TODO implement linked accounts
+
     @Override
-    public void link(String localUserName, String foreignDomainName, String foreignUserName)
+    public void link(String linkingAccountManager, String localAccountId, String foreignDomainName, String foreignUserName)
+    {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public Collection<LinkedAccount> listLinks(String linkingAccountManager, String localAccountId)
+    {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public AccountAttributes resolveLink(String linkingAccountManager, String foreignDomainName, String foreignAccountId)
+    {
+        throw new NotImplementedException();
+    }
+
+    @Override
+    public boolean deleteLink(String linkingAccountManager, String localAccountId, String foreignDomainName, String foreignAccountId)
     {
         throw new NotImplementedException();
     }
