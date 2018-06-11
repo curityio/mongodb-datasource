@@ -14,12 +14,14 @@
  *  limitations under the License.
  */
 
-package com.curity.mongodb.datasource;
+package io.curity.mongodb.datasource;
 
 
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import se.curity.identityserver.sdk.attribute.Attributes;
 import se.curity.identityserver.sdk.attribute.scim.v2.ResourceAttributes;
 import se.curity.identityserver.sdk.attribute.scim.v2.extensions.DeviceAttributes;
@@ -39,6 +41,8 @@ import static se.curity.identityserver.sdk.attribute.scim.v2.extensions.DeviceAt
 
 public class MongoDeviceDataAccessProvider implements DeviceDataAccessProvider
 {
+    private static final Logger _logger = LoggerFactory.getLogger(MongoDeviceDataAccessProvider.class);
+
     private final MongoDatabase _database;
 
     @SuppressWarnings("unused") // used through DI
@@ -50,6 +54,7 @@ public class MongoDeviceDataAccessProvider implements DeviceDataAccessProvider
     @Override
     public DeviceAttributes getBy(String deviceId, String accountId)
     {
+        _logger.debug("Received request to get device by deviceId :{} and accountId: {}", deviceId, accountId);
         Map<String, Object> dataMap = _database.getCollection(RESOURCE_TYPE)
                 .find(and(eq("accountId", accountId), eq("deviceId", deviceId))).first();
         return getDeviceAttributes(dataMap);
@@ -59,6 +64,7 @@ public class MongoDeviceDataAccessProvider implements DeviceDataAccessProvider
     public ResourceAttributes<?> getBy(String deviceId, String accountId,
                                        ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
+        _logger.debug("Received request to get device by deviceId :{} and accountId: {}", deviceId, accountId);
         Map<String, Object> dataMap = _database.getCollection(RESOURCE_TYPE)
                 .find(and(eq("accountId", accountId), eq("deviceId", deviceId)))
                 .projection(include(new ArrayList<>(attributesEnumeration.getAttributes()))).first();
@@ -68,6 +74,7 @@ public class MongoDeviceDataAccessProvider implements DeviceDataAccessProvider
     @Override
     public DeviceAttributes getById(String deviceId)
     {
+        _logger.debug("Received request to get device by deviceId :{}", deviceId);
         Map<String, Object> dataMap = _database.getCollection(RESOURCE_TYPE)
                 .find(eq("deviceId", deviceId)).first();
         return getDeviceAttributes(dataMap);
@@ -76,6 +83,7 @@ public class MongoDeviceDataAccessProvider implements DeviceDataAccessProvider
     @Override
     public ResourceAttributes<?> getById(String deviceId, ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
+        _logger.debug("Received request to get device by deviceId :{}", deviceId);
         Map<String, Object> dataMap = _database.getCollection(RESOURCE_TYPE)
                 .find(eq("deviceId", deviceId))
                 .projection(include(new ArrayList<>(attributesEnumeration.getAttributes()))).first();
@@ -85,6 +93,7 @@ public class MongoDeviceDataAccessProvider implements DeviceDataAccessProvider
     @Override
     public List<DeviceAttributes> getByAccountId(String accountId)
     {
+        _logger.debug("Received request to get devices by accountId :{}", accountId);
         return _database.getCollection(RESOURCE_TYPE)
                 .find(eq("accountId", accountId)).into(new ArrayList<>())
                 .stream().map(item -> getDeviceAttributes(item)).collect(Collectors.toList());
@@ -93,6 +102,7 @@ public class MongoDeviceDataAccessProvider implements DeviceDataAccessProvider
     @Override
     public List<? extends ResourceAttributes<?>> getByAccountId(String accountId, ResourceQuery.AttributesEnumeration attributesEnumeration)
     {
+        _logger.debug("Received request to get devices by accountId :{}", accountId);
         return _database.getCollection(RESOURCE_TYPE)
                 .find(eq("accountId", accountId))
                 .projection(include(new ArrayList<>(attributesEnumeration.getAttributes())))
@@ -103,6 +113,7 @@ public class MongoDeviceDataAccessProvider implements DeviceDataAccessProvider
     @Override
     public void create(DeviceAttributes deviceAttributes)
     {
+        _logger.debug("Received request to create device by deviceId :{}", deviceAttributes.getDeviceId());
         Document document = new Document(deviceAttributes.toMap());
         _database.getCollection(RESOURCE_TYPE).insertOne(document);
     }
@@ -110,6 +121,7 @@ public class MongoDeviceDataAccessProvider implements DeviceDataAccessProvider
     @Override
     public void update(DeviceAttributes deviceAttributes)
     {
+        _logger.debug("Received request to update device by deviceId :{}", deviceAttributes.getDeviceId());
         _database.getCollection(RESOURCE_TYPE).updateOne(eq("deviceId", deviceAttributes.getDeviceId()),
                 new Document("$set", new Document(deviceAttributes.toMap())));
     }
@@ -117,12 +129,14 @@ public class MongoDeviceDataAccessProvider implements DeviceDataAccessProvider
     @Override
     public void delete(String id)
     {
+        _logger.debug("Received request to update device by id :{}", id);
         _database.getCollection(RESOURCE_TYPE).deleteOne(eq("_id", new ObjectId(id)));
     }
 
     @Override
     public void delete(String deviceId, String accountId)
     {
+        _logger.debug("Received request to delete device by deviceId :{} and accountId: {}", deviceId, accountId);
         _database.getCollection(RESOURCE_TYPE).deleteOne(
                 and(
                         eq("deviceId", deviceId),
@@ -133,6 +147,7 @@ public class MongoDeviceDataAccessProvider implements DeviceDataAccessProvider
     @Override
     public ResourceQueryResult getAll(long startIndex, long count)
     {
+        _logger.debug("Received request to get all devices with startIndex :{} and count: {}", startIndex, count);
         List<DeviceAttributes> deviceAttributes = _database.getCollection(RESOURCE_TYPE).find()
                 .skip((int) startIndex)
                 .limit((int) count)

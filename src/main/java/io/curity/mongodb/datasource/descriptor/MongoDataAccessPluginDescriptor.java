@@ -14,14 +14,14 @@
  *  limitations under the License.
  */
 
-package com.curity.mongodb.datasource.descriptor;
+package io.curity.mongodb.datasource.descriptor;
 
-import com.curity.mongodb.datasource.ConnectionPool;
-import com.curity.mongodb.datasource.MongoBucketDataAccessProvider;
-import com.curity.mongodb.datasource.MongoCredentialDataAccessProvider;
-import com.curity.mongodb.datasource.MongoDeviceDataAccessProvider;
-import com.curity.mongodb.datasource.MongoUserAccountDataAccessProvider;
-import com.curity.mongodb.datasource.config.MongoDataAccessProviderConfiguration;
+import io.curity.mongodb.datasource.ConnectionPool;
+import io.curity.mongodb.datasource.MongoBucketDataAccessProvider;
+import io.curity.mongodb.datasource.MongoCredentialDataAccessProvider;
+import io.curity.mongodb.datasource.MongoDeviceDataAccessProvider;
+import io.curity.mongodb.datasource.MongoUserAccountDataAccessProvider;
+import io.curity.mongodb.datasource.config.MongoDataAccessProviderConfiguration;
 import se.curity.identityserver.sdk.Nullable;
 import se.curity.identityserver.sdk.datasource.BucketDataAccessProvider;
 import se.curity.identityserver.sdk.datasource.CredentialDataAccessProvider;
