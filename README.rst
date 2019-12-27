@@ -103,6 +103,12 @@ To create indexes follow the instructions.
 
        db.Bucket.createIndex({'subject': 1, 'purpose': 1}, {unique: true})
 
+5. Create unique indexx for Dynamic Clients DAP by following command:
+
+    .. code:: python
+
+    db.DynamicallyRegisteredClients.createIndex({clientId: 1},{unique: true});
+
 After you create above indexes, MongoDB is ready to use.
 
 Required dependencies
