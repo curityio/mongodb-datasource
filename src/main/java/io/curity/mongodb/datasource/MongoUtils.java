@@ -19,10 +19,12 @@ package io.curity.mongodb.datasource;
 import com.mongodb.client.MongoDatabase;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+import se.curity.identityserver.sdk.Nullable;
 import se.curity.identityserver.sdk.attribute.AccountAttributes;
 import se.curity.identityserver.sdk.data.query.ResourceQuery;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.mongodb.client.model.Filters.and;
@@ -42,9 +44,20 @@ public class MongoUtils
     {
         if (dataMap != null)
         {
-            dataMap.put("id", dataMap.get("_id").toString());
-            dataMap.remove("_id");
-            return AccountAttributes.fromMap(dataMap);
+            return AccountAttributes.fromMap(stripMongoFields(dataMap));
+        }
+        return null;
+    }
+
+    @Nullable
+    public static Map<String, Object> stripMongoFields(@Nullable Map<String, Object> dataMap)
+    {
+        if (dataMap != null)
+        {
+            HashMap<String,Object> newMap = new HashMap<>(dataMap);
+            newMap.put("id", dataMap.get("_id").toString());
+            newMap.remove("_id");
+            return newMap;
         }
         return null;
     }

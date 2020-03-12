@@ -20,12 +20,14 @@ import io.curity.mongodb.datasource.ConnectionPool;
 import io.curity.mongodb.datasource.MongoBucketDataAccessProvider;
 import io.curity.mongodb.datasource.MongoCredentialDataAccessProvider;
 import io.curity.mongodb.datasource.MongoDeviceDataAccessProvider;
+import io.curity.mongodb.datasource.MongoDynamicallyRegisteredClientDataAccessProvider;
 import io.curity.mongodb.datasource.MongoUserAccountDataAccessProvider;
 import io.curity.mongodb.datasource.config.MongoDataAccessProviderConfiguration;
 import se.curity.identityserver.sdk.Nullable;
 import se.curity.identityserver.sdk.datasource.BucketDataAccessProvider;
 import se.curity.identityserver.sdk.datasource.CredentialDataAccessProvider;
 import se.curity.identityserver.sdk.datasource.DeviceDataAccessProvider;
+import se.curity.identityserver.sdk.datasource.DynamicallyRegisteredClientDataAccessProvider;
 import se.curity.identityserver.sdk.datasource.UserAccountDataAccessProvider;
 import se.curity.identityserver.sdk.plugin.ManagedObject;
 import se.curity.identityserver.sdk.plugin.descriptor.DataAccessProviderPluginDescriptor;
@@ -73,6 +75,13 @@ public final class MongoDataAccessPluginDescriptor implements DataAccessProvider
     public Class<? extends BucketDataAccessProvider> getBucketDataAccessProvider()
     {
         return MongoBucketDataAccessProvider.class;
+    }
+
+    @Nullable
+    @Override
+    public Class<? extends DynamicallyRegisteredClientDataAccessProvider> getDynamicallyRegisteredClientDataAccessProvider()
+    {
+        return MongoDynamicallyRegisteredClientDataAccessProvider.class;
     }
 
     public Optional<? extends ManagedObject<MongoDataAccessProviderConfiguration>> createManagedObject(
