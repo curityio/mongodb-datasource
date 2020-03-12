@@ -107,7 +107,7 @@ To create indexes follow the instructions.
 
     .. code:: python
 
-    db.DynamicallyRegisteredClients.createIndex({clientId: 1},{unique: true});
+        db.DynamicallyRegisteredClients.createIndex({clientId: 1},{unique: true});
 
 After you create above indexes, MongoDB is ready to use.
 
