@@ -25,6 +25,8 @@ import se.curity.identityserver.sdk.attribute.Attributes;
 import se.curity.identityserver.sdk.attribute.scim.v2.extensions.DynamicallyRegisteredClientAttributes;
 import se.curity.identityserver.sdk.datasource.DynamicallyRegisteredClientDataAccessProvider;
 
+import java.util.Map;
+
 import static com.mongodb.client.model.Filters.eq;
 import static se.curity.identityserver.sdk.attribute.scim.v2.extensions.DynamicallyRegisteredClientAttributes.CLIENT_ID;
 import static se.curity.identityserver.sdk.attribute.scim.v2.extensions.DynamicallyRegisteredClientAttributes.RESOURCE_TYPE;
