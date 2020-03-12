@@ -103,7 +103,7 @@ To create indexes follow the instructions.
 
        db.Bucket.createIndex({'subject': 1, 'purpose': 1}, {unique: true})
 
-5. Create unique indexx for Dynamic Clients DAP by following command:
+5. Create unique index for Dynamic Clients DAP by following command:
 
     .. code:: python
 
