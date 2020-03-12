@@ -25,13 +25,11 @@ import se.curity.identityserver.sdk.attribute.Attributes;
 import se.curity.identityserver.sdk.attribute.scim.v2.extensions.DynamicallyRegisteredClientAttributes;
 import se.curity.identityserver.sdk.datasource.DynamicallyRegisteredClientDataAccessProvider;
 
-import java.util.Map;
-
 import static com.mongodb.client.model.Filters.eq;
 import static se.curity.identityserver.sdk.attribute.scim.v2.extensions.DynamicallyRegisteredClientAttributes.CLIENT_ID;
 import static se.curity.identityserver.sdk.attribute.scim.v2.extensions.DynamicallyRegisteredClientAttributes.RESOURCE_TYPE;
 
-public class MongoDynamicallyRegisteredClientDataAccessProvider implements DynamicallyRegisteredClientDataAccessProvider
+public final class MongoDynamicallyRegisteredClientDataAccessProvider implements DynamicallyRegisteredClientDataAccessProvider
 {
     private static final Logger _logger = LoggerFactory.getLogger(MongoDynamicallyRegisteredClientDataAccessProvider.class);
     private final MongoDatabase _database;
@@ -58,7 +56,8 @@ public class MongoDynamicallyRegisteredClientDataAccessProvider implements Dynam
     @Override
     public void create(DynamicallyRegisteredClientAttributes dynamicallyRegisteredClientAttributes)
     {
-        _logger.debug("Received request to CREATE dynamic client with data : {}", dynamicallyRegisteredClientAttributes);
+        _logger.debug("Received request to CREATE dynamic client with id : {}",
+                dynamicallyRegisteredClientAttributes.getClientId());
         Document document = new Document(dynamicallyRegisteredClientAttributes.toMap());
         _database.getCollection(RESOURCE_TYPE).insertOne(document);
     }
@@ -66,7 +65,8 @@ public class MongoDynamicallyRegisteredClientDataAccessProvider implements Dynam
     @Override
     public void update(DynamicallyRegisteredClientAttributes dynamicallyRegisteredClientAttributes)
     {
-        _logger.debug("Received request to UPDATE dynamic client with data : {}", dynamicallyRegisteredClientAttributes);
+        _logger.debug("Received request to UPDATE dynamic client for client : {}",
+                dynamicallyRegisteredClientAttributes.getClientId());
         _database.getCollection(RESOURCE_TYPE).updateOne(eq(CLIENT_ID, dynamicallyRegisteredClientAttributes.getClientId()),
                 new Document("$set", new Document(dynamicallyRegisteredClientAttributes.toMap())));
     }
