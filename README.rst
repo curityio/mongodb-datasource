@@ -4,10 +4,10 @@ MongoDB Data Source Plug-in
 .. image:: https://travis-ci.org/curityio/mongodb-datasource.svg?branch=dev
      :target: https://travis-ci.org/curityio/mongodb-datasource
      
-.. image:: https://curity.io/assets/images/badges/mongodb-data-access-plugin-quality.svg
+.. image:: https://curity.io/assets/images/badges/mongodb-datasource-quality.svg
        :target: https://curity.io/resources/code-examples/status/
        
-.. image:: https://curity.io/assets/images/badges/mongodb-data-access-plugin-availability.svg
+.. image:: https://curity.io/assets/images/badges/mongodb-datasource-availability.svg
        :target: https://curity.io/resources/code-examples/status/     
 
 This project provides an opens source MongoDB Data Source plug-in for the Curity Identity Server. This allows an administrator to add functionality to Curity which will then enable end users to use MongoDB data source.
