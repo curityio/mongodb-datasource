@@ -16,12 +16,13 @@
 
 package io.curity.mongodb.datasource;
 
-import io.curity.mongodb.datasource.config.MongoDataAccessProviderConfiguration;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoDatabase;
+import io.curity.mongodb.datasource.config.MongoDataAccessProviderConfiguration;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
 import se.curity.identityserver.sdk.plugin.ManagedObject;
@@ -39,16 +40,24 @@ public class ConnectionPool extends ManagedObject<MongoDataAccessProviderConfigu
     {
         super(configuration);
         _configuration = configuration;
-        ServerAddress serverAddress = new ServerAddress(configuration.getHost(), configuration.getPort());
+
+        String uri = String.format("mongodb://%s:%s", _configuration.getHost(), _configuration.getPort());
+        ConnectionString connectionString = new ConnectionString(uri);
+
         MongoCredential mongoCredential = MongoCredential.createCredential(configuration.getUsername(),
                 configuration.getDatabase(), configuration.getPassword().toCharArray());
 
-        CodecRegistry codecRegistry = fromRegistries(MongoClient.getDefaultCodecRegistry(),
+        CodecRegistry codecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
                 fromProviders(PojoCodecProvider.builder().automatic(true).build()));
 
         // TODO: it must be possible to configure the connection with an SSL server truststore.
-        MongoClientOptions options = MongoClientOptions.builder().codecRegistry(codecRegistry).build();
-        _mongoClient = new MongoClient(serverAddress, mongoCredential, options);
+        MongoClientSettings settings = MongoClientSettings.builder()
+                .codecRegistry(codecRegistry)
+                .credential(mongoCredential)
+                .applyConnectionString(connectionString)
+                .build();
+
+        _mongoClient = MongoClients.create(settings);
     }
 
     public MongoDatabase getDatabase()
