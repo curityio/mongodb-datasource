@@ -16,8 +16,8 @@
 
 package io.curity.mongodb.datasource;
 
-
 import com.mongodb.client.MongoDatabase;
+import jdk.jshell.spi.ExecutionControl;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -29,7 +29,6 @@ import se.curity.identityserver.sdk.data.query.ResourceQuery;
 import se.curity.identityserver.sdk.data.query.ResourceQueryResult;
 import se.curity.identityserver.sdk.data.update.AttributeUpdate;
 import se.curity.identityserver.sdk.datasource.UserAccountDataAccessProvider;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -128,25 +127,41 @@ public class MongoUserAccountDataAccessProvider implements UserAccountDataAccess
     @Override
     public void link(String linkingAccountManager, String localAccountId, String foreignDomainName, String foreignUserName)
     {
-        throw new NotImplementedException();
+        try {
+            throw new ExecutionControl.NotImplementedException("Not Implemented");
+        } catch (ExecutionControl.NotImplementedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public Collection<LinkedAccount> listLinks(String linkingAccountManager, String localAccountId)
     {
-        throw new NotImplementedException();
+        try {
+            throw new ExecutionControl.NotImplementedException("Not Implemented");
+        } catch (ExecutionControl.NotImplementedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public AccountAttributes resolveLink(String linkingAccountManager, String foreignDomainName, String foreignAccountId)
     {
-        throw new NotImplementedException();
+        try {
+            throw new ExecutionControl.NotImplementedException("Not Implemented");
+        } catch (ExecutionControl.NotImplementedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public boolean deleteLink(String linkingAccountManager, String localAccountId, String foreignDomainName, String foreignAccountId)
     {
-        throw new NotImplementedException();
+        try {
+            throw new ExecutionControl.NotImplementedException("Not Implemented");
+        } catch (ExecutionControl.NotImplementedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

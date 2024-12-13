@@ -16,13 +16,13 @@ This project provides an opens source MongoDB Data Source plug-in for the Curity
 System Requirements
 ~~~~~~~~~~~~~~~~~~~
 
-* Curity Identity Server 3.0.0 and `its system requirements <https://developer.curity.io/docs/latest/system-admin-guide/system-requirements.html>`_
+* Curity Identity Server and `its system requirements <https://developer.curity.io/docs/latest/system-admin-guide/system-requirements.html>`_
 
 Requirements for Building from Source
 """""""""""""""""""""""""""""""""""""
 
 * Maven 3
-* Java JDK v. 8
+* Java JDK v. 21
 
 Compiling the Plug-in from Source
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -32,11 +32,11 @@ The source is very easy to compile. To do so from a shell, issue this command: `
 Installation
 ~~~~~~~~~~~~
 
-To install this plug-in, either download a binary version available from the `releases section of this project's GitHub repository <https://github.com/curityio/mongodb-datasource/releases>`_ or compile it from source (as described above). If you compiled the plug-in from source, the package will be placed in the ``target`` subdirectory. The resulting JAR file or the one downloaded from GitHub needs to placed in the directory ``${IDSVR_HOME}/usr/share/plugins/mongodb``. (The name of the last directory, ``mongodb``, which is the plug-in group, is arbitrary and can be anything.) After doing so, the plug-in will become available as soon as the node is restarted.
+To install this plug-in, compile it from source (as described above). The resulting JAR files in ``target/libs`` needs to placed in the directory ``${IDSVR_HOME}/usr/share/plugins/mongodb``. (The name of the last directory, ``mongodb``, which is the plug-in group, is arbitrary and can be anything.) After doing so, the plug-in will become available as soon as the node is restarted.
 
 .. note::
 
-    The JAR file needs to be deployed to each run-time node and the admin node. For simple test deployments where the admin node is a run-time node, the JAR file only needs to be copied to one location.
+    The JAR files needs to be deployed to each run-time node and the admin node. For simple test deployments where the admin node is a run-time node, the JAR files only needs to be copied to one location.
 
 For a more detailed explanation of installing plug-ins, refer to the `Curity developer guide <https://developer.curity.io/docs/latest/developer-guide/plugins/index.html#plugin-installation>`_.
 
@@ -49,29 +49,27 @@ Configuration using the Admin GUI
 To configure a new MongoDB data source using the Curity admin UI, do the following after logging in:
 
 1. Click the ``Facilities`` button at the top-right of the screen.
-2. Next to ``Data Sources``, click ``New``.
+2. Next to ``Data Sources``, click ``+``.
 
-    .. figure:: docs/images/facilities-menu.png
+    .. figure:: docs/images/facilities-menu.jpg
         :align: center
         :width: 600px
 
-3. Enter a name (e.g., ``mongodb1``) and click ``Create``.
+3. Enter a name (e.g., ``mongodb1``) and select ``mongodb`` ``Type`` then click ``Create``.
 
-    .. figure:: docs/images/create-datasource1.png
+    .. figure:: docs/images/create-datasource1.jpg
         :align: center
         :width: 600px
-
-4. On the next page, Select ``mongodb`` ``Type`` from dropdown.
 
 5. You need to fill in all the required configurations for MongoDB like ``Database``, ``Host`` etc.
 
-    .. figure:: docs/images/create-datasource2.png
+    .. figure:: docs/images/create-datasource2.jpg
         :align: center
         :width: 600px
 
     .. note::
 
-        The MongoDB-specific configuration is generated dynamically based on the `configuration model defined in the Java interface <https://github.com/curityio/mongodb-datasource/blob/dev/src/main/java/com/curity/mongodb/datasource/config/MongoDataAccessProviderConfiguration.java>`_.
+        The MongoDB-specific configuration is generated dynamically based on the `configuration model defined in the Java interface <https://github.com/curityio/mongodb-datasource/blob/dev/src/main/java/io/curity/mongodb/datasource/config/MongoDataAccessProviderConfiguration.java>`_.
 
 
 Once all of these changes are made, they will be staged, but not committed (i.e., not running). To make them active, click the ``Commit`` menu option in the ``Changes`` menu. Optionally enter a comment in the ``Deploy Changes`` dialogue and click ``OK``.
@@ -122,9 +120,10 @@ Required dependencies
 ~~~~~~~~~~~~~~~~~~~~~
 Following dependencies/jars must be in plugin group classpath.
 
-1. `bson-3.6.3.jar <http://central.maven.org/maven2/org/mongodb/bson/3.6.3/bson-3.6.3.jar>`_
-2. `mongodb-driver-3.6.3.jar <http://central.maven.org/maven2/org/mongodb/mongo-java-driver/3.6.3/mongo-java-driver-3.6.3.jar>`_
-3. `mongodb-driver-core-3.6.3.jar <http://central.maven.org/maven2/org/mongodb/mongodb-driver-core/3.6.3/mongodb-driver-core-3.6.3.jar>`_
+1. `bson-5.2.1.jar <https://repo1.maven.org/maven2/org/mongodb/bson/5.2.1/bson-5.2.1.jar>`_
+2. `mongodb-driver-5.1.1.jar <https://repo1.maven.org/maven2/org/mongodb/bson/5.2.1/bson-5.2.1.jar>`_
+3. `mongodb-driver-core-5.2.1.jar <https://repo1.maven.org/maven2/org/mongodb/mongodb-driver-core/5.2.1/mongodb-driver-core-5.2.1.jar>`_
+4. `mongodb-driver-sync-5.2.1.jar <https://repo1.maven.org/maven2/org/mongodb/mongodb-driver-sync/5.2.1/mongodb-driver-sync-5.2.1.jar>`_
 
 License
 ~~~~~~~
